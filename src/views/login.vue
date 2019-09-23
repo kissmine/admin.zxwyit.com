@@ -74,8 +74,8 @@ export default {
           _this.loading = true; 
             _this.axios.get("/OAuth/authenticate",{
               params:{
-                stuMobile: _this.ruleForm.userMobile,
-                stuPassword: _this.ruleForm.userPassword
+                userMobile: _this.ruleForm.userMobile,
+                userPassword: _this.ruleForm.userPassword
               }
             }).then(res => {
               if (_this.checked) {
@@ -96,8 +96,8 @@ export default {
               _this.loading = false;//加载状态
               var token = res.data.token_type + " " + res.data.access_token;
               sessionStorage.setItem("token",token);
-              sessionStorage.setItem("userUid",res.data.profile.stuUid);
-              sessionStorage.setItem("userName",res.data.profile.stuName);
+              sessionStorage.setItem("userUid",res.data.profile.userUid);
+              sessionStorage.setItem("userName",res.data.profile.userName);
               _this.$message({
                 message: "登录成功",
                 type: "success"

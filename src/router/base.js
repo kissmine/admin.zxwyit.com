@@ -14,6 +14,11 @@ const base = [
        name: 'StudentManage',
        component: () => import('@/views/base/StudentManage')
      },
+     {
+      path: '/role',
+      name: 'role',
+      component: () => import('@/views/base/role')
+    },
     {
         path:"/TeacherManage",
         name:"TeacherManage",

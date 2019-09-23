@@ -16,10 +16,6 @@
               <i><img src="../assets/favicon.png" alt=""></i>
               <a slot="title">智学无忧教育</a>
           </el-menu-item>
-          <el-menu-item :class="isCollapse?'':'el_item'" index="/home" @click="addTab('首页')">
-            <i class="el-icon-s-home" style="color:#fff !important;"></i>
-            <span slot="title">首页</span>
-          </el-menu-item>
           <el-submenu v-for="(value,index) in asideTion" :key="index" :index="''+(index+1)">
             <template slot="title">
               <i :class="value.class"></i>
@@ -102,6 +98,7 @@ export default {
             {name: "班级管理",path: "/ClassManage"},
             {name: "学生管理",path: "/StudentManage"},
             {name: "老师管理",path: "/TeacherManage"},
+            {name: "用户角色",path: "/role"},
             {name: "修改密码",path: "/ModifyPassword"}
           ]
         },
