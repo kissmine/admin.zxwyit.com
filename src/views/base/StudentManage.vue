@@ -24,13 +24,13 @@
                 <el-dialog
                 :title="popUptitle"
                 :visible.sync="centerDialogVisible"
-                width="25%"
+                width="30%"
                 center>
                     <!-- 添加学生信息表单 -->
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="80px" class="demo-ruleForm">
                         <!-- 选择班级 -->
                         <el-form-item label="班级" prop="classNum">
-                            <el-select v-model="ruleForm.classNum" filterable placeholder="查找班级">
+                            <el-select v-model="ruleForm.classNum" @change="Altere(ruleForm.classNum)" filterable placeholder="查找班级">
                                 <el-option
                                 v-for="item in options"
                                 :key="item.classId"
@@ -47,8 +47,8 @@
                         <!-- 选择生日 -->
                         <el-form-item label="生日" required>
                             <el-col :span="11">
-                            <el-form-item prop="date">
-                                <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.date" style="width: 100%;"></el-date-picker>
+                            <el-form-item prop="dater">
+                                <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.dater" style="width: 100%;"></el-date-picker>
                             </el-form-item>
                             </el-col>
                             <el-col class="line" :span="2"></el-col>
@@ -67,7 +67,8 @@
                             <el-input v-model="ruleForm.passwo" placeholder="填写学生密码" ></el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" @click="submitForm('ruleForm')">创建</el-button>
+                            <el-button v-show="increased" type="primary" @click="submitForm('ruleForm')">创建</el-button>
+                            <el-button v-show="amend" type="primary" @click="AlterPe('ruleForm')">修改</el-button>
                             <el-button @click="resetForm()">取消</el-button>
                         </el-form-item>
                     </el-form>
@@ -166,11 +167,16 @@ export default {
         centerDialogVisible:false,
         //弹出框主体
         popUptitle:'新增学生信息',
+        amend:false,
+        increased:true,
+        //学生唯一标识符
+        stuUid:'',
+        Classval:'',
         // 添加表单验证数据
         ruleForm: {
             name: '',
             classNum: '',
-            date: '',
+            dater: '',
             phone:'',
             radio:'男',
             passwo:''
@@ -183,7 +189,7 @@ export default {
           classNum: [
             { required: true, message: '请选择班级', trigger: 'change' }
           ],
-          date: [
+          dater: [
             { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
           ],
           phone: [
@@ -202,20 +208,24 @@ export default {
         handleEdit(index, row) {
             console.log(index, row);
             var _this = this
+            _this.amend = true,
+            _this.increased = false,
             _this.centerDialogVisible = true
             _this.popUptitle = "修改学生信息"
-            // _this.name = row.stuName
-            // _this.classNum = row.className
-            // _this.date = row.stuBirthDay
-            // _this.phone = row.stuMobile
-            // _this.radio = row.stuSex
-            // _this.passwo = row.stuPassword
+            console.log(row)
+            _this.ruleForm = {
+                name:row.stuName,
+                classNum:row.className,
+                dater:parseInt(row.stuBirthDay),
+                phone:row.stuMobile,
+                radio:row.stuSex,
+                passwo:row.stuPassword
+            }
+            _this.stuUid = row.stuUid
         },
         //删除
         handleDelete(index, row) {
             var _this = this
-            // console.log(index, row);
-            // this.tableData.splice(index,1)
             _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -250,10 +260,17 @@ export default {
          * 查找框事件
          */
         Alter(val){
+           
             var _this = this
+            _this.Classval = val
             _this.axios.get('Student/GetClassStudent?classId='+val).then(function(res){
                 _this.tableData = res.data
             })
+        },
+        Altere(val){
+            console.log(val)
+            var _this = this
+            _this.Classval = val
         },
         // 增加学生
         increase(){
@@ -269,7 +286,7 @@ export default {
                     {
                         "stuName":_this.ruleForm.name,//学生姓名
                         "stuClassId":_this.ruleForm.classNum,//班级编号
-                        "stuBirthDay":_this.ruleForm.date,//生日
+                        "stuBirthDay":_this.ruleForm.dater,//生日
                         "stuMobile":_this.ruleForm.phone,//手机号
                         "stuPassword":_this.ruleForm.passwo,//登录密码,
                         "stuSex":_this.ruleForm.radio//性别
@@ -284,26 +301,76 @@ export default {
                         _this.axios.get('Student/GetClassStudent?classId='+_this.ruleForm.classNum).then(function(res){
                             _this.tableData = res.data
                         })
+                    }else if(res.data.code==0){
+                            _this.$message({
+                                 showClose: true,
+                                 message: '新增失败',
+                                 type: 'error'
+                            });
                     }else{
                         _this.$message({
                             showClose: true,
-                            message: '新增失败',
+                            message: '新增失败,不能新增',
                             type: 'error'
                         });
                     }
                 })
             } else {
-                
                 return false;
             }
             });
         },
-        resetForm() {
+        resetForm(){
             var _this = this
             _this.centerDialogVisible = false
             for(let k in _this.ruleForm){
                 _this.ruleForm[k] = ""
             }
+        },
+        //修改
+        AlterPe(formName){
+            var _this = this
+            _this.$refs[formName].validate((valid)=>{
+                if(valid){
+                        _this.axios.post("Student/ModifyStudent",
+                                {
+                                    "stuUid":_this.stuUid,// 要修改学生的唯一标识符
+                                    "stuName":_this.ruleForm.name,//要修改的名称
+                                    "stuBirthDay":new Date(_this.ruleForm.dater),//要修改的生日
+                                    "stuClassId":_this.Classval,//班级编号
+                                    "stuMobile":_this.ruleForm.phone,//要修改的手机号
+                                    "stuPassword":_this.ruleForm.passwo,//要修改的密码
+                                    "stuSex":_this.ruleForm.stuSex,//要修改的性别
+                                }
+                        ).then(function(res){
+                                if(res.data.code==1){
+                                    _this.$message({
+                                        showClose:true,
+                                        type: 'success',
+                                        message: '修改成功!'
+                                    });
+                                    _this.axios.get('Student/GetClassStudent?classId='+_this.ruleForm.classNum).then(function(res){
+                                        _this.tableData = res.data
+                                    })
+                                }else if(res.data.code==0){
+                                    _this.$message({
+                                        showClose: true,
+                                        message: '修改失败',
+                                        type: 'error'
+                                    });
+                                }else{
+                                    _this.$message({
+                                        showClose: true,
+                                        message: '修改失败,不能修改',
+                                        type: 'error'
+                                    });
+                                }
+                        })
+                        
+                }else{
+                    return false;
+                }
+            })
         }
     },
     //创建后
