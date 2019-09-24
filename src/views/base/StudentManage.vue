@@ -83,61 +83,55 @@
                 <!-- 下标 -->
                 <el-table-column
                 label="#"
-                width="100">
+                width="70">
                 <template slot-scope="scope">
                     <span>{{scope.$index+1}}</span>
                 </template>
                 </el-table-column>
                 <!-- 班级名称 -->
                 <el-table-column
-                label="班级名称"
-                width="180">
+                label="班级名称">
                 <template slot-scope="scope">
                     <span>{{scope.row.className}}</span>
                 </template>
                 </el-table-column>
                 <!-- 学生信息 -->
                 <el-table-column
-                label="学生信息"
-                width="180">
+                label="学生信息">
                 <template slot-scope="scope">
                     <span>{{scope.row.stuName}}</span>
                 </template>
                 </el-table-column>
                 <!-- 性别 -->
                 <el-table-column
-                label="性别"
-                width="180">
+                label="性别">
                 <template slot-scope="scope">
                     <span>{{scope.row.stuSex}}</span>
                 </template>
                 </el-table-column>
                 <!-- 手机号 -->
                 <el-table-column
-                label="手机号"
-                width="180">
+                label="手机号">
                 <template slot-scope="scope">
                     <span>{{scope.row.stuMobile}}</span>
                 </template>
                 </el-table-column>
                 <!-- 出生日期 -->
                 <el-table-column
-                label="出生日期"
-                width="180">
+                label="出生日期">
                 <template slot-scope="scope">
                     <span>{{scope.row.stuBirthDay}}</span>
                 </template>
                 </el-table-column>
                 <!-- 年龄 -->
                 <el-table-column
-                label="年龄"
-                width="180">
+                label="年龄">
                 <template slot-scope="scope">
                     <span>{{scope.row.stuAge}}</span>
                 </template>
                 </el-table-column>
                 <!-- 操作 -->
-                <el-table-column label="操作">
+                <el-table-column width="160"  label="操作">
                 <template slot-scope="scope">
                     <el-button
                     size="mini"
@@ -238,9 +232,7 @@ export default {
                             type: 'success',
                             message: '删除成功!'
                         });
-                        _this.axios.get('Student/GetClassStudent?classId='+row.classId).then(function(res){
-                            _this.tableData = res.data
-                        })
+                        _this.Refresh(row.classId)
                     }else{
                         _this.$message({
                             showClose: true,
@@ -260,12 +252,9 @@ export default {
          * 查找框事件
          */
         Alter(val){
-           
             var _this = this
             _this.Classval = val
-            _this.axios.get('Student/GetClassStudent?classId='+val).then(function(res){
-                _this.tableData = res.data
-            })
+             _this.Refresh(val);
         },
         Altere(val){
             console.log(val)
@@ -277,6 +266,8 @@ export default {
             var _this = this
             _this.centerDialogVisible = true
             _this.popUptitle = "新增学生信息"
+            _this.amend = false
+            _this.increased = true
         },
         submitForm(formName) {
             var _this = this
@@ -298,9 +289,8 @@ export default {
                             type: 'success',
                             message: '新增成功!'
                         });
-                        _this.axios.get('Student/GetClassStudent?classId='+_this.ruleForm.classNum).then(function(res){
-                            _this.tableData = res.data
-                        })
+                        _this.Refresh(_this.ruleForm.classNum);
+                        _this.value = _this.ruleForm.classNum
                     }else if(res.data.code==0){
                             _this.$message({
                                  showClose: true,
@@ -332,6 +322,11 @@ export default {
             var _this = this
             _this.$refs[formName].validate((valid)=>{
                 if(valid){
+                    _this.$confirm('此操作将修改学生信息, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                    }).then(() => {
                         _this.axios.post("Student/ModifyStudent",
                                 {
                                     "stuUid":_this.stuUid,// 要修改学生的唯一标识符
@@ -340,7 +335,7 @@ export default {
                                     "stuClassId":_this.Classval,//班级编号
                                     "stuMobile":_this.ruleForm.phone,//要修改的手机号
                                     "stuPassword":_this.ruleForm.passwo,//要修改的密码
-                                    "stuSex":_this.ruleForm.stuSex,//要修改的性别
+                                    "stuSex":_this.ruleForm.radio,//要修改的性别
                                 }
                         ).then(function(res){
                                 if(res.data.code==1){
@@ -349,9 +344,8 @@ export default {
                                         type: 'success',
                                         message: '修改成功!'
                                     });
-                                    _this.axios.get('Student/GetClassStudent?classId='+_this.ruleForm.classNum).then(function(res){
-                                        _this.tableData = res.data
-                                    })
+                                    _this.Refresh(_this.Classval);
+                                    _this.value = _this.Classval
                                 }else if(res.data.code==0){
                                     _this.$message({
                                         showClose: true,
@@ -366,10 +360,23 @@ export default {
                                     });
                                 }
                         })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消修改'
+                        });          
+                    });
                         
                 }else{
                     return false;
                 }
+            })
+        },
+        // 刷新数据
+        Refresh(val){
+            var _this = this
+            _this.axios.get('Student/GetClassStudent?classId='+val).then(function(res){
+                    _this.tableData = res.data
             })
         }
     },
@@ -421,6 +428,14 @@ export default {
                 height: 40px;
             }
         }
-         
+        /deep/ .el-table__row td{
+            width:19%;
+            span{
+                overflow:hidden;
+                text-overflow:ellipsis;
+                white-space:nowrap;
+            }
+        }
+        
     }
 </style>
