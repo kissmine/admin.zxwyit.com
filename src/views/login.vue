@@ -74,8 +74,8 @@ export default {
           _this.loading = true; 
             _this.axios.get("/OAuth/authenticate",{
               params:{
-                stuMobile: _this.ruleForm.userMobile,
-                stuPassword: _this.ruleForm.userPassword
+                userMobile: _this.ruleForm.userMobile,
+                userPassword: _this.ruleForm.userPassword
               }
             }).then(res => {
               if (_this.checked) {
