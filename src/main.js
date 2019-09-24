@@ -9,7 +9,7 @@ import VueAxios from "vue-axios";
 
 
 Vue.config.productionTip = false;
-axios.defaults.baseURL = "http://192.168.1.188:/api";
+axios.defaults.baseURL = "http://192.168.1.188:12/api";
 Vue.use(VueAxios, axios);
 Vue.use(ElementUI);
 
@@ -33,7 +33,7 @@ axios.interceptors.response.use((res) => {
   // 对响应错误做点什么 token 已过期
   //获取状态码
   const {status} = error.response;
-  console.log(status)
+  console.log(status+"---8888")
   if(status === 401) {
     failureToken();
   }
