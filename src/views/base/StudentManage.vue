@@ -25,7 +25,8 @@
                 :title="popUptitle"
                 :visible.sync="centerDialogVisible"
                 width="30%"
-                center>
+                center
+                >
                     <!-- 添加学生信息表单 -->
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="80px" class="demo-ruleForm">
                         <!-- 选择班级 -->
@@ -378,6 +379,9 @@ export default {
             _this.axios.get('Student/GetClassStudent?classId='+val).then(function(res){
                     _this.tableData = res.data
             })
+        },
+        updatePe(){
+            console.log(123456)
         }
     },
     //创建后
@@ -423,6 +427,7 @@ export default {
             }
         }
         /deep/ .el-dialog.el-dialog--center{
+            margin-top: 20px !important;
             .el-input__inner{
                 width: 100%;
                 height: 40px;
