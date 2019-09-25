@@ -9,6 +9,7 @@
 </template>
 
 <style lang="less">
+h1{margin: 0px;padding: 0px;}
 html,body{
   height:100%;
   margin: 0%;

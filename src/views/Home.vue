@@ -17,18 +17,20 @@
               <a slot="title">智学无忧教育</a>
           </el-menu-item>
           <el-submenu v-for="(value,index) in asideTion" :key="index" :index="''+(index+1)">
-            <template slot="title">
-              <i :class="value.class"></i>
-              <span slot="title">{{ value.aside }}</span>
+            <template slot="title" >
+              <div @click="crumbsNavi(value,index)" >
+                <i :class="value.class"></i>
+                <span slot="title">{{ value.aside }}</span>
+              </div>
             </template>
             <el-menu-item-group>
               <el-menu-item
-                v-for="(value,index) in value.option"
-                :key="index"
-                @click="addTab(value.name,value.path)"
+                v-for="(valu,inde) in value.option"
+                :key="inde"
+                @click="addTab(valu.name,valu.path),crumbsNavi(value,index)"
                 class="menu_a"
-                :index="value.path"
-              >{{ value.name }}</el-menu-item>
+                :index="valu.path"
+              >{{ valu.name }}</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
         </el-menu>
@@ -72,6 +74,11 @@
           <el-avatar :size="50" :src="circleUrl" style="margin-left: 15px"></el-avatar>
         </el-header>
         <el-main style="text-align:left;">
+          <el-breadcrumb v-show="crumbsBool" separator-class="el-icon-arrow-right">
+            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>{{titleCrumbs}}</el-breadcrumb-item>
+            <el-breadcrumb-item>{{crumbsChire}}</el-breadcrumb-item>
+          </el-breadcrumb>
           <!-- 路由视图 keep-alive会缓存用户视图位置-->
               <router-view/>
         </el-main>
@@ -122,7 +129,10 @@ export default {
           path: "/home"
         }
       ],
-      tabIndex: 1 //用于添加头部导航,1代表一个标签页如:'首页'
+      tabIndex: 1, //用于添加头部导航,1代表一个标签页如:'首页'
+      titleCrumbs:'',
+      crumbsChire:'',
+      crumbsBool:false
     };
   },
   // 钩子函数创建时
@@ -133,6 +143,9 @@ export default {
       _this.$router.replace("/login")
     }
   },
+  /**
+   * 创建后
+   */
   created() {
     let _this = this;
     var getTabList = JSON.parse(sessionStorage.getItem("editableTabs"));
@@ -145,6 +158,9 @@ export default {
       _this.activeindex = getTabList[index].path;
     }
   },
+  /**
+   * 方法的使用
+   */
   methods: {
     /**
      * 侧边栏点击添加到头部导航标签页
@@ -153,6 +169,7 @@ export default {
      */
     addTab(name, path) {
       let _this = this;
+      _this.crumbsChire = name
       function checkAdult(ediTabTittle) {
         //点击时查询传入name的下标
         return ediTabTittle.title == name; //editableTabs中的title与传入name相等返回查询下标 ，没有返回-1
@@ -179,6 +196,22 @@ export default {
     clickTab(targetPane) {
       let _this = this;
       _this.routerViem(targetPane.name);
+      _this.crumbsChire = targetPane.label
+      if(targetPane.label=="首页"){
+         _this.crumbsBool = false
+      }
+      for(let k in _this.asideTion[0].option){
+          if(targetPane.label==_this.asideTion[0].option[k].name){
+            _this.crumbsBool = true
+              _this.titleCrumbs = this.asideTion[0].aside
+          }
+      }
+      for(let k in _this.asideTion[1].option){
+          if(targetPane.label==_this.asideTion[1].option[k].name){
+             _this.crumbsBool = true
+              _this.titleCrumbs = this.asideTion[1].aside
+          }
+      }
     },
     /**
      * 头部导航标签页点击删除
@@ -194,6 +227,22 @@ export default {
             let nextTab = tabs[index + 1] || tabs[index - 1];
             if (nextTab) {
               activeName = nextTab.name;
+              _this.crumbsChire = nextTab.title
+              if(nextTab.title=="首页"){
+                _this.crumbsBool = false
+              }
+              for(let k in _this.asideTion[0].option){
+                  if(nextTab.title==_this.asideTion[0].option[k].name){
+                    _this.crumbsBool = true
+                      _this.titleCrumbs = this.asideTion[0].aside
+                  }
+              }
+              for(let k in _this.asideTion[1].option){
+                  if(nextTab.title==_this.asideTion[1].option[k].name){
+                    _this.crumbsBool = true
+                      _this.titleCrumbs = this.asideTion[1].aside
+                  }
+              }
             }
           }
         });
@@ -221,6 +270,11 @@ export default {
       this.$router.push({
 					path: '/login'
 			});
+    },
+    // 面包屑导航
+    crumbsNavi(val,ind){
+      this.titleCrumbs = val.aside
+      this.crumbsBool = true
     }
   }
 };
@@ -354,7 +408,7 @@ a{
   color: #fff !important;
 }
 .el-menu-item.is-active{
-  color: #fff !important;
+  color: #fff ;
 }
 // 侧边栏
 .el-aside {
@@ -394,4 +448,13 @@ a{
       .el-menu-item-group /deep/ .el-menu-item .menu_a{
           padding:0px !important;
       }
+    .home{
+      /deep/ .el-main{
+        padding: 15px;
+        .el-breadcrumb{
+          padding: 10px 0px;
+        }
+      }
+      
+    }
 </style>
