@@ -1,6 +1,5 @@
 <template>
   <div id="table-Role">
-      <h1>用户角色</h1>
       <el-card class="box-card">
         <!-- 新增角色 -->
         <p class="box-p"><span @click="add()" ><i class="el-icon-circle-plus-outline"></i>新增角色</span></p>
