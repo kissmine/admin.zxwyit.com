@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="table-Role">
       <h1>用户角色</h1>
       <el-card class="box-card">
         <!-- 新增角色 -->
@@ -16,12 +16,11 @@
             <el-button type="primary" @click="affirm">确 定</el-button>
           </div>
         </el-dialog>
-        <!-- 编辑 -->
+        <!-- 编辑角色弹框 -->
         <el-dialog title="修改角色信息" :visible.sync="bool">
           <el-form >
             <el-form-item label="角色名称" :label-width="formLabelWidth">
               <el-input  v-model="uname.userTypeTypeName" autocomplete="off"></el-input>
-              <!-- v-model="uname.userTypeTypeName" -->
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -29,10 +28,8 @@
             <el-button type="primary" @click="affirms">确 定</el-button>
           </div>
         </el-dialog>
-
         <!-- 用户表 -->
         <template>
-          
           <el-table
             :data="tableData"
             style="width: 100%">
@@ -115,8 +112,7 @@ export default {
       // 编辑角色确认
       affirms(){
         var than=this
-        var chin=/^[\u4e00-\u9fa5]{0,}$/
-        console.log(than.uname.userTypeTypeName)
+        var chin=/^[\u4e00-\u9fa5]{0,}$/  //中文正则表达式
         if(chin.test(than.uname.userTypeTypeName)){
           than.axios.post('/UserType/ModifyUserRole?id='+than.uname.userTypeId+'&userRoleName='+than.uname.userTypeTypeName,
           ).then(function(res){
@@ -138,7 +134,7 @@ export default {
       },
       // 删除
       handleDelete(index, row) {
-        var than=this
+        var than=this;
         this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -173,11 +169,9 @@ export default {
         })
       }
     },
+    // 创建后
     created(){
       this.RoleInfo()
-    },
-    updated(){
-      // this.RoleInfo()
     }
 }
 </script>

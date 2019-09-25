@@ -1,13 +1,12 @@
 <template>
-    <div>
-        <!-- <h1 class="el-icon-edit">修改密码</h1> -->
+    <div id="form-Modifypassword">
         <el-card class="box-card">
             <div slot="header" class="clearfix ">
                 <span class="el-icon-edit">修改密码</span>
             </div>
             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                <el-form-item label="旧密码" prop="formerpass">
-                    <el-input type="password" v-model="ruleForm.formerpass" autocomplete="off"></el-input>
+                <el-form-item label="旧密码" prop="formerPass">
+                    <el-input type="password" v-model="ruleForm.formerPass" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="新密码" prop="pass">
                     <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
@@ -58,13 +57,13 @@ export default {
       };
       return {
         ruleForm: {
-            formerpass: '',     //旧密码
+            formerPass: '',     //旧密码
             pass: '',           //新密码
             checkPass: ''       //确认密码
         },
         rules: {
         //  旧密码
-          formerpass: [
+          formerPass: [
             { validator: former, trigger: 'blur' }
           ],
         //   新密码
@@ -95,11 +94,10 @@ export default {
                             message: '修改成功',
                             type: 'success'
                         });
-                        
-                  }else if(res.data.code=='-3'){
+                    }else if(res.data.code=='-3'){
                         that.$message.error('旧密码错误！');
                     }else if(res.data.code=='-2'){
-                            that.$message.error('旧密码不能为空！');
+                        that.$message.error('旧密码不能为空！');
                     }else {
                         that.$message.error('其它错误！'); 
                     }
