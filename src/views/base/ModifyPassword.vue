@@ -88,13 +88,14 @@ export default {
                 this.axios.get("/User/ModifyPassword?uid="+sessionStorage.userUid+"&oldPassword="+this.ruleForm.formerpass+"&newPassword="+this.ruleForm.pass,
                 ).then(function(res){
                   if(res.data.code=='1'){
+                        that.ruleForm.formerpass='';  //旧密码重新赋值为空
+                        that.ruleForm.pass='';        //新密码重新赋值为空
+                        that.ruleForm.checkPass='';   //确认密码重新赋值为空
                         that.$message({
                             message: '修改成功',
                             type: 'success'
                         });
-                        // than.formerpass='';  //旧密码重新赋值为空
-                        // than.pass='';        //新密码重新赋值为空
-                        // than.checkPass='';   //确认密码重新赋值为空
+                        
                   }else if(res.data.code=='-3'){
                         that.$message.error('旧密码错误！');
                     }else if(res.data.code=='-2'){

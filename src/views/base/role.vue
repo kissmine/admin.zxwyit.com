@@ -20,7 +20,8 @@
         <el-dialog title="修改角色信息" :visible.sync="bool">
           <el-form >
             <el-form-item label="角色名称" :label-width="formLabelWidth">
-              <el-input v-model="uname.userTypeTypeName" autocomplete="off"></el-input>
+              <el-input  v-model="uname.userTypeTypeName" autocomplete="off"></el-input>
+              <!-- v-model="uname.userTypeTypeName" -->
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -31,6 +32,7 @@
 
         <!-- 用户表 -->
         <template>
+          
           <el-table
             :data="tableData"
             style="width: 100%">
@@ -95,6 +97,7 @@ export default {
               type: 'success',
               message: '添加成功！'
               });
+              than.RoleInfo()
               than.dialogFormVisible=false
             }else{
               than.$message.error('添加失败！');
@@ -113,6 +116,7 @@ export default {
       affirms(){
         var than=this
         var chin=/^[\u4e00-\u9fa5]{0,}$/
+        console.log(than.uname.userTypeTypeName)
         if(chin.test(than.uname.userTypeTypeName)){
           than.axios.post('/UserType/ModifyUserRole?id='+than.uname.userTypeId+'&userRoleName='+than.uname.userTypeTypeName,
           ).then(function(res){
@@ -126,6 +130,7 @@ export default {
             }else{
               than.$message.error('修改失败！');
             }
+            than.RoleInfo()
           })
         }else{
           than.$message.error('名称必须是中文！');
@@ -147,6 +152,7 @@ export default {
               type: 'success',
               message: '删除成功！'
               });
+              than.RoleInfo()
             }else{
               than.$message.error('删除失败！');
             }
@@ -159,8 +165,8 @@ export default {
         });
       },
       // 请求全部角色信息
-      RoleInfo(){
-      var than=this
+      RoleInfo() {
+        var than=this
         this.axios.get('/UserType/GetUserRoles')
         .then(function(res){
           than.tableData=res.data
@@ -171,7 +177,7 @@ export default {
       this.RoleInfo()
     },
     updated(){
-      this.RoleInfo()
+      // this.RoleInfo()
     }
 }
 </script>
