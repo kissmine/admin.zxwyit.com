@@ -105,6 +105,7 @@ export default {
             {name: "班级管理",path: "/ClassManage"},
             {name: "学生管理",path: "/StudentManage"},
             {name: "老师管理",path: "/TeacherManage"},
+            {name: "用户角色",path: "/role"},
             {name: "修改密码",path: "/ModifyPassword"}
           ]
         },
