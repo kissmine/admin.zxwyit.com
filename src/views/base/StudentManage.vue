@@ -4,7 +4,7 @@
     <el-card class="box-card">
         <div slot="header" class="clearfix">
             <!-- 搜索部分 -->
-            <el-select v-model="value" @change="Alter(value)" filterable placeholder="查找班级">
+            <el-select v-model="value" @change="findClass(value)" filterable placeholder="查找班级">
                 <el-option
                 v-for="item in options"
                 :key="item.classId"
@@ -15,7 +15,7 @@
             </el-select>
             <!-- 搜索部分结束 -->
             <!-- 添加学生部分 -->
-            <div class="student-Add" @click="increase" >
+            <div class="student-Add" @click="additionStudent" >
                 <span class="el-icon-circle-plus-outline"></span>
                 <i>新增学生</i>
             </div>
@@ -31,7 +31,7 @@
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="80px" class="demo-ruleForm">
                         <!-- 选择班级 -->
                         <el-form-item label="班级" prop="classNum">
-                            <el-select v-model="ruleForm.classNum" @change="Altere(ruleForm.classNum)" filterable placeholder="查找班级">
+                            <el-select v-model="ruleForm.classNum" @change="findClassr(ruleForm.classNum)" filterable placeholder="查找班级">
                                 <el-option
                                 v-for="item in options"
                                 :key="item.classId"
@@ -65,12 +65,12 @@
                         </el-form-item>
                         <!-- 填写密码 -->
                         <el-form-item label="密码" prop="passwo">
-                            <el-input v-model="ruleForm.passwo" placeholder="填写学生密码" ></el-input>
+                            <el-input type="password" v-model="ruleForm.passwo" placeholder="填写学生密码" ></el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button v-show="increased" type="primary" @click="submitForm('ruleForm')">创建</el-button>
-                            <el-button v-show="amend" type="primary" @click="AlterPe('ruleForm')">修改</el-button>
-                            <el-button @click="resetForm('ruleForm')">取消</el-button>
+                            <el-button v-show="increased" type="primary" @click="foundStudent('ruleForm')">创建</el-button>
+                            <el-button v-show="amend" type="primary" @click="amendStudent('ruleForm')">修改</el-button>
+                            <el-button @click="cancel('ruleForm')">取消</el-button>
                         </el-form-item>
                     </el-form>
                     <!-- 添加学生信息表单结束 -->
@@ -136,11 +136,11 @@
                 <template slot-scope="scope">
                     <el-button
                     size="mini"
-                    @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                    @click="compileStudent(scope.$index, scope.row)">编辑</el-button>
                     <el-button
                     size="mini"
                     type="danger"
-                    @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                    @click="deleteStudent(scope.$index, scope.row)">删除</el-button>
                 </template>
                 </el-table-column>
             </el-table>
@@ -166,8 +166,8 @@ export default {
         increased:true,
         //学生唯一标识符
         stuUid:'',
-        Classval:'',
-        Index:"",
+        classVal:'',
+        indexVal:"",
         // 添加表单验证数据
         ruleForm: {
             name: '',//用户的绑定数据
@@ -200,51 +200,54 @@ export default {
       }
     },
     methods: {
-        //编辑
-        handleEdit(index, row) {
-            // console.log(row.stuBirthDay = new Date(row.stuBirthDay))
-            var _this = this
-            _this.Index = index
-            _this.amend = true,
-            _this.increased = false,
-            _this.centerDialogVisible = true
-            _this.popUptitle = "修改学生信息"
-            _this.ruleForm = {
-                name:row.stuName,
-                classNum:row.className,
-                dater:new Date(row.stuBirthDay),
-                phone:row.stuMobile,
-                radio:row.stuSex,
-                passwo:row.stuPassword
+         /**
+         * 修改学生的方法
+         */
+        compileStudent(index, row) {
+            var _this = this //使用变量接收this减少this的查找优化代码
+            _this.indexVal = index//获取当前下标
+            _this.amend = true,//验证修改显示的判断数据
+            _this.increased = false,//验证增加显示的判断数据
+            _this.centerDialogVisible = true//显示对话框
+            _this.popUptitle = "修改学生信息"//改变对话框的标题信息
+            _this.ruleForm = {//吧当行的数据放在当前的对话框里表单对应的数据
+                name:row.stuName,//学生姓名
+                classNum:row.className,//班级名称
+                dater:new Date(row.stuBirthDay),//学生生日
+                phone:row.stuMobile,//学生手机号
+                radio:row.stuSex,//学生性别
+                passwo:row.stuPassword//学生密码
             }
-            _this.stuUid = row.stuUid
+            _this.stuUid = row.stuUid//当前的学生唯一标示用户来进行修改的判断
         },
-        //删除
-        handleDelete(index, row){
+        /**
+         * 删除学生的方法
+         */
+        deleteStudent(index, row){
             var _this = this
-            _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+            _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {//提示用户是否删除
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                _this.axios.get("Student/RemoveStudent?uid="+row.stuUid).then(function(res){
+                _this.axios.get("Student/RemoveStudent?uid="+row.stuUid).then(function(res){//调用删除接口
                     if(res.data.code==1){
                         _this.$message({
                             showClose:true,
                             type: 'success',
                             message: '删除成功!'
                         });
-                        _this.tableData.splice(index,1)
+                        _this.tableData.splice(index,1)//删除成功就删除指定下标的数据
                         // _this.Refresh(row.classId)
                     }else{
-                        _this.$message({
+                        _this.$message({//提示该用户不能删除
                             showClose: true,
                             message: '删除错误,不能删除',
                             type: 'error'
                         });
                     }
                 })
-                }).catch(() => {
+                }).catch(() => {//提示该用户取消了删除
                     this.$message({
                         type: 'info',
                         message: '已取消删除'
@@ -252,34 +255,47 @@ export default {
                 });
         },
         /**
-         * 查找框事件
+         *查找班级的方法
          */
-        Alter(val){
+        findClass(val){
             var _this = this
-            _this.Classval = val
-            _this.Refresh(val);
+            _this.classVal = val//将当前的班级id给classVal数据
+            _this.acquireClass(val);//将当前的班级id传给acquireClass方法
         },
-        Altere(val){
+        /**
+         * 在对话框查找班级的方法
+         */
+        findClassr(val){
             var _this = this
-            _this.Classval = val
-            
+            _this.classVal = val//将当前的班级id给classVal数据
         },
-        // 增加学生
-        increase(){
+        /**
+         * 取消新增和修改的方法
+         */
+        cancel(formName){
             var _this = this
-            _this.centerDialogVisible = true
-            _this.popUptitle = "新增学生信息"
-            _this.amend = false
-            _this.increased = true
-            for(let k in _this.ruleForm){
+            _this.centerDialogVisible = false//点击取消将对话框隐藏
+            _this.$refs[formName].resetFields();//将表单的数据清空
+        },
+        /**
+         * 新增学生的方法
+         */
+        additionStudent(){
+            var _this = this
+            _this.centerDialogVisible = true//点击新增时显示对话框
+            _this.popUptitle = "新增学生信息"//点击改变对话框的标题
+            _this.amend = false//修改按钮隐藏
+            _this.increased = true//新增按钮显示
+            for(let k in _this.ruleForm){//进来时将数据清空一次
                 _this.ruleForm[k] = ""
             }
+            _this.ruleForm.radio = "男"//默认显示性别的数据
         },
-        submitForm(formName){
+        foundStudent(formName){
             var _this = this
-            _this.$refs[formName].validate((valid) => {
+            _this.$refs[formName].validate((valid) => {//判断表单的值是否正确、正确才能进入添加数据
             if (valid) {
-                _this.axios.post("Student/AddStudent",
+                _this.axios.post("Student/AddStudent",//调用新增的接口
                     {
                         "stuName":_this.ruleForm.name,//学生姓名
                         "stuClassId":_this.ruleForm.classNum,//班级编号
@@ -295,12 +311,7 @@ export default {
                             type: 'success',
                             message: '新增成功!'
                         });
-                        // if(_this.value==_this.ruleForm.classNum){
-                            
-                        // }else{
-                        //     console.log(789456)
-                        // }
-                        _this.Refresh(_this.ruleForm.classNum);
+                        _this.acquireClass(_this.ruleForm.classNum);//新增成功后获取个班级的数据
                         _this.value = _this.ruleForm.classNum
                     }else if(res.data.code==0){
                             _this.$message({
@@ -321,32 +332,28 @@ export default {
             }
             });
         },
-        //取消
-        resetForm(formName,event){
+        /**
+         * 修改的方法
+         */
+        amendStudent(formName){
             var _this = this
-            _this.centerDialogVisible = false
-            _this.$refs[formName].resetFields();
-        },
-        //修改
-        AlterPe(formName){
-            var _this = this
-            var wenDatenun = new Date(_this.ruleForm.dater)
-            var Datenum = new Date()
-            var peryear = Datenum.getFullYear()
-            var befyear = wenDatenun.getFullYear()
-            _this.$refs[formName].validate((valid)=>{
+            var wenDatenun = new Date(_this.ruleForm.dater)//获取你修改的时间
+            var Datenum = new Date()//获取当前时间
+            var peryear = Datenum.getFullYear()//将当前时间只获取年份
+            var befyear = wenDatenun.getFullYear()//获取你修改的时间只获取年份
+            _this.$refs[formName].validate((valid)=>{//判断表单的值是否正确、正确才能进入修改学生数据
                 if(valid){
                     _this.$confirm('此操作将修改学生信息, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                     }).then(() => {
-                        _this.axios.post("Student/ModifyStudent",
+                        _this.axios.post("Student/ModifyStudent",//调用修改的接口
                                 {
                                     "stuUid":_this.stuUid,// 要修改学生的唯一标识符
                                     "stuName":_this.ruleForm.name,//要修改的名称
                                     "stuBirthDay":new Date(_this.ruleForm.dater),//要修改的生日
-                                    "stuClassId":_this.Classval,//班级编号
+                                    "stuClassId":_this.classVal,//班级编号
                                     "stuMobile":_this.ruleForm.phone,//要修改的手机号
                                     "stuPassword":_this.ruleForm.passwo,//要修改的密码
                                     "stuSex":_this.ruleForm.radio,//要修改的性别
@@ -358,30 +365,31 @@ export default {
                                         type: 'success',
                                         message: '修改成功!'
                                     });
-                                    if(_this.value==_this.Classval){
+                                    if(_this.value==_this.classVal){//判断你修改的班级的Id是否跟我的当前页面的班级的Id相同
                                         var num = 0
                                         var numthe = 0
                                         var d = _this.ruleForm.dater
-                                        if(d.getMonth() + 1>9){
+                                        if(d.getMonth() + 1>9){//判断修改当前时间的月份如果大于9就不显示0小于9就显示0
                                             numthe = ""
                                         }else{
                                             numthe = 0
                                         }
-                                        if(d.getDate()>9){
+                                        if(d.getDate()>9){//判断修改当前时间的日期如果大于9就不显示0小于9就显示0
                                             num = ""
                                         }else{
                                             num = 0
                                         }
+                                        // 将修改的数据显示在当前得班级上
                                         var datetime=d.getFullYear() + '-'+numthe+'' + (d.getMonth() + 1) + '-'+num+'' + d.getDate() + 'T0' + d.getHours() + ':0' + d.getMinutes() + ':0' + d.getSeconds();
-                                        _this.tableData[_this.Index].stuName = _this.ruleForm.name
-                                        _this.tableData[_this.Index].stuBirthDay = datetime
-                                        _this.tableData[_this.Index].stuClassId = _this.Classval
-                                        _this.tableData[_this.Index].stuMobile = _this.ruleForm.phone
-                                        _this.tableData[_this.Index].stuPassword = _this.ruleForm.passwo
-                                        _this.tableData[_this.Index].stuSex = _this.ruleForm.radio
-                                        _this.tableData[_this.Index].stuAge = Math.floor(peryear-befyear)
-                                    }else{ 
-                                        _this.tableData.splice(_this.Index,1)
+                                        _this.tableData[_this.indexVal].stuName = _this.ruleForm.name
+                                        _this.tableData[_this.indexVal].stuBirthDay = datetime
+                                        _this.tableData[_this.indexVal].stuClassId = _this.classVal
+                                        _this.tableData[_this.indexVal].stuMobile = _this.ruleForm.phone
+                                        _this.tableData[_this.indexVal].stuPassword = _this.ruleForm.passwo
+                                        _this.tableData[_this.indexVal].stuSex = _this.ruleForm.radio
+                                        _this.tableData[_this.indexVal].stuAge = Math.floor(peryear-befyear)
+                                    }else{//当前班级的Id不同就删除修改的当行数据
+                                        _this.tableData.splice(_this.indexVal,1)
                                     }
                                     // _this.Refresh(_this.Classval);
                                     // _this.value = _this.Classval
@@ -411,8 +419,10 @@ export default {
                 }
             })
         },
-        // 刷新数据
-        Refresh(val){
+        /**
+         * 获取的改变的班级数据的方法
+         */
+        acquireClass(val){
             var _this = this
             _this.axios.get('Student/GetClassStudent?classId='+val).then(function(res){
                     _this.tableData = res.data
@@ -422,6 +432,7 @@ export default {
     //创建后
     created(){
         var _this = this
+        // 获取查找班级数据的接口
         _this.axios.get("Class/GetAllClass").then(function(res){
             _this.options = res.data
         })
