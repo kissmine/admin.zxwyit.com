@@ -55,7 +55,7 @@
           <!-- 按钮组件属性判断是否禁用 -->
           <el-button size="mini" type="danger"
          :disabled="scope.row.disableDelete"  
-          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -85,7 +85,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="handleEdit=false">取 消</el-button>
-        <el-button type="primary" @click="updata(polist)">修改</el-button>
+        <el-button type="primary" @click="upData(polist)">修改</el-button>
       </div>
     </el-dialog>
     <!-- 新增用户弹框 -->
@@ -176,10 +176,10 @@ export default {
   //方法
   methods: {
     allTeacher() {//所用用户信息
-        var _this = this;
-      _this.axios.get("/User/GetTeachers", {}).then(res => {
-        _this.tableData  = res.data;//渲染数据用的数组
-        _this.tableData2 = res.data;//过滤数据用的数组
+        var that = this;
+      that.axios.get("/User/GetTeachers", {}).then(res => {
+        that.tableData  = res.data;//渲染数据用的数组
+        that.tableData2 = res.data;//过滤数据用的数组
       });
       },
      
@@ -192,58 +192,59 @@ export default {
     //点击弹出修改弹框
     //item 当前选中一行的数据
     updelet(item) {
-      this.handleEdit = true; //修改弹框显示
-      this.valueone = item.userUserTypeId; //给当前选中的userUserTypeId赋值
-      this.polist = item; //给当前选中编辑的对象赋值
-      this.radio = item.userSex == "男" ? 1 : 2; //当按钮默认值为男时赋值为1
-      this.value = item.userTypeTypeName; //给当前的默认的角色赋值
+      var that=this;
+      that.handleEdit = true; //修改弹框显示
+      that.valueone = item.userUserTypeId; //给当前选中的userUserTypeId赋值
+      that.polist = item; //给当前选中编辑的对象赋值
+      that.radio = item.userSex == "男" ? 1 : 2; //当按钮默认值为男时赋值为1
+      that.value = item.userTypeTypeName; //给当前的默认的角色赋值
     },
     //新增用户信息
     add() {
-      var th = this;
-      th.form.userSex = th.radio == 1 ? "男" : "女";//获取当前性别所选值
-      var userUserTypeId = Number(th.form.userTypeTypeName); //获取当前角色名称所对应数字并转型
+      var that = this;
+      that.form.userSex = that.radio == 1 ? "男" : "女";//获取当前性别所选值
+      var userUserTypeId = Number(that.form.userTypeTypeName); //获取当前角色名称所对应数字并转型
       //判断当前新增弹框里是否有未填完 未填完则不执行添加操作
-      if(th.form.userName&&th.form.userMobile&&th.form.userPassword&&th.form.userTypeTypeName!==""){                        
-      th.axios.post("/User/AddTeacher", {
-          userName: th.form.userName,
-          userMobile: th.form.userMobile,
-          userPassword: th.form.userPassword,
-          userSex: th.form.userSex,
+      if(that.form.userName&&that.form.userMobile&&that.form.userPassword&&that.form.userTypeTypeName!==""){                        
+      that.axios.post("/User/AddTeacher", {
+          userName: that.form.userName,
+          userMobile: that.form.userMobile,
+          userPassword: that.form.userPassword,
+          userSex: that.form.userSex,
           userUserTypeId: userUserTypeId
         })
         .then(res => {        
           if (res.data.code == 1) {
-            th.$message({
+            that.$message({
               type: "success",
               message: "添加成功!"
             });
-             th.allTeacher()//调用重新加载数据
-             th.radio2=0;//给当前按钮状态切换到0全部状态
+             that.allTeacher()//调用重新加载数据
+             that.radio2=0;//给当前按钮状态切换到0全部状态
           }
           if (res.data.code == -2) {
-            th.$message({
+            that.$message({
               type: "info",
               message: "参数错误!"
             });
           }
           if (res.data.code == 0) {
-            th.$message({
+            that.$message({
               type: "info",
               message: "添加失败!数据未变动"
             });
           }
           if (res.data.code == -1) {
-            th.$message({
+            that.$message({
               type: "error",
               message: "系统错误!"
               });
             }
          
         });
-      th.dialogFormVisible = false; //当新增用户时间完成后关闭弹框赋值为flase
+      that.dialogFormVisible = false; //当新增用户时间完成后关闭弹框赋值为flase
       }else{
-              th.$message({
+              that.$message({
               type: "error",
               message: "信息未填写完！添加失败"
               });
@@ -255,7 +256,7 @@ export default {
       //polist 当前所需要修改的数据
       var that = this;
       var userSex = that.radio == 1 ? "男" : "女"; //取值默认按钮值
-      that.axios
+        that.axios
         .post("User/ModifyTeacher", {//请求修改数据接口
           userUid: polist.userUid,
           userName: polist.userName,
@@ -268,25 +269,25 @@ export default {
           if (res.data.code == 1) {
              that.allTeacher()
              that.radio2=0
-            that.$message({
+             that.$message({
               type: "success",
               message: "修改成功!"
             });
           }
           if (res.data.code == -2) {
-            that.$message({
+              that.$message({
               type: "info",
               message: "参数错误!"
             });
           }
           if (res.data.code == 0) {
-            that.$message({
+              that.$message({
               type: "info",
               message: "修改失败!"
             });
           }
           if (res.data.code == -1) {
-            that.$message({
+              that.$message({
               type: "error",
               message: "系统错误!"
           });
@@ -297,18 +298,18 @@ export default {
     //删除用户
     handleDelete(row) {//row 当前要删除的数据
       var that = this;
-      that.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {//点击删除按钮触发此弹框
+          that.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {//点击删除按钮触发此弹框
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         })
-        .then(() => {
+          .then(() => {
           // 点击确认后请求删除数据
           that.axios.post("User/RemoveTeacher?uid="+row.userUid)
-            .then(res => {//利用接口返回参数给用户提示提高用户体验
-              if(res.data.code==1){
-               that.allTeacher()
-               that.radio2=0
+                .then(res => {//利用接口返回参数给用户提示提高用户体验
+                if(res.data.code==1){
+                that.allTeacher()
+                that.radio2=0
                 that.$message({
                 type: "success",
                 message: "删除成功"
@@ -349,7 +350,7 @@ export default {
    watch:{//监听筛选数据
     radio2(Number){
           var that=this;
-        if(Number==0){//所选按钮下标为0时所有数据
+          if(Number==0){//所选按钮下标为0时所有数据
           that.tableData=that.tableData2
         }
         for (var i = 1; i <=that.userName.length; i++) {//循环角色
@@ -364,9 +365,9 @@ export default {
   },
   //创建后钩子函数
   created() {
-    var that=this;
-    that.allTeacher()//调用重新请求渲染所有老师信息接口
-    that.axios.get("/UserType/GetUserRoles",{}).then(res=>{//获取所有角色名称信息
+      var that=this;
+      that.allTeacher()//调用重新请求渲染所有老师信息接口
+      that.axios.get("/UserType/GetUserRoles",{}).then(res=>{//获取所有角色名称信息
       that.userName=res.data
     })
   },
