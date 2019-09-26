@@ -19,9 +19,9 @@
       <!-- 编号 -->
       <el-table-column  label="#" type="index" :index="indexMethod"></el-table-column>
       <!-- 用户名称 -->
-      <el-table-column label="用户名称"  style="padding-left:20px;">
+      <el-table-column label="用户名称" >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{scope.row.userName}}</span>
+          <span >{{scope.row.userName}}</span>
         </template>
       </el-table-column>
       <!-- 手机号 -->
@@ -31,26 +31,26 @@
         </template>
       </el-table-column>
       <!-- 密码 -->
-      <el-table-column label="密码"  style="padding-left:20px;">
+      <el-table-column label="密码" >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{scope.row.userPassword}}</span>
+          <span >{{scope.row.userPassword}}</span>
         </template>
       </el-table-column>
       <!-- 性别 -->
-      <el-table-column label="性别"  style="padding-left:20px;">
+      <el-table-column label="性别"  >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{scope.row.userSex}}</span>
+          <span >{{scope.row.userSex}}</span>
         </template>
       </el-table-column>
       <!-- 角色名称 -->
-      <el-table-column label="角色名称"  style="padding-left:20px;">
+      <el-table-column label="角色名称"  >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{scope.row.userTypeTypeName}}</span>
+          <span >{{scope.row.userTypeTypeName}}</span>
         </template>
       </el-table-column>
       <!-- 操作 -->
-      <el-table-column label="操作">
-        <template slot-scope="scope">
+      <el-table-column label="操作" width='150'>
+        <template slot-scope="scope" >
           <el-button size="mini" @click="updelet(scope.row)">编辑</el-button>
           <!-- 按钮组件属性判断是否禁用 -->
           <el-button size="mini" type="danger"
