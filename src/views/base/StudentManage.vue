@@ -24,7 +24,7 @@
                 <el-dialog
                 :title="popUptitle"
                 :visible.sync="centerDialogVisible"
-                width="30%"
+                width="27%"
                 center
                 >
                     <!-- 添加学生信息表单 -->
@@ -399,6 +399,9 @@ export default {
         border: 1px solid #ccc;
         box-shadow: 0px 0px 10px 3px #ececec;
         border-radius: 5px;
+        /deep/ .el-dialog__headerbtn .el-dialog__close{
+            display: none;
+        }
         //搜索部分
         /deep/ .el-input__inner{
             height: 30px;
