@@ -1,4 +1,5 @@
 <template>
+  <!-- 3、问答题 -->
   <el-form :model="essayForm" status-icon ref="essayForm" @submit.native.prevent>
     <el-form-item label="题干" prop="questionTitle" :label-width="formLabelWidth">
       <el-input type="textarea" :rows="1" placeholder="请输入内容" v-model="essayForm.questionTitle" ></el-input>
@@ -25,16 +26,16 @@
 export default {
   data() {
     return {
-      formLabelWidth: "100px",
-      essayForm: {
-        tpqScore: 5,
-        questionTitle: "",
-        questionTypeId: 3,
+      formLabelWidth: "100px",//左边需要用到的固定宽度
+      essayForm: {//用作添加问答题的格式
+        tpqScore: 5,//分值
+        questionTitle: "",//题目的标题
+        questionTypeId: 3,//题目的类型 1=选择题 2=填空题 3=问答题
         answerQuestion: {
           aqAnswer: ""//问答题的答案
         }
       },
-      setEssay: { //用于重置
+      setEssay: { //用来做重置
         tpqScore: 5,
         questionTitle: "",
         questionTypeId: 3,
@@ -45,11 +46,13 @@ export default {
     };
   },
   methods: {
+    //重置
     resetForm(formName) {
       let _this = this;
       _this.$refs[formName].resetFields();
       _this.essayForm = JSON.parse(JSON.stringify(_this.setEssay));
     },
+    //保存题目
     AddEssay(formName){
         var _this=this
         _this.$refs[formName].validate(valid => {

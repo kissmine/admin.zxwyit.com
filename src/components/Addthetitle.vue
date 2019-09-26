@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <!-- 2、添加题目 -->
+  <div class="redios">
     <div class="redio">
       <span>题目类型</span>
       <template>
@@ -16,33 +17,33 @@
       <Addfillinblanks v-if="radio==2" @setGap="addQuestion" />
       <Addquestionanswer v-if="radio==3" @setEssay="addQuestion" />
     </div>
-    <Topicpreview :TestPaper="TestPaper"></Topicpreview>
-    <div style="text-align: center;margin-top: 50px;"></div>
+    <div class="redio_buttom">
+      <Topicpreview :TestPaper="TestPaper" @AllsumUp="AllsumUp"></Topicpreview>
+    </div>
   </div>
 </template>
 
 <script>
-import MakeTestpaper from "@/components/MakeTestpaper";
-import AddthetitleMcq from "@/components/AddthetitleMcq";
-import Addfillinblanks from "@/components/Addfillinblanks";
-import Addquestionanswer from "@/components/Addquestionanswer";
-import Topicpreview from "@/components/Topicpreview";
+import AddthetitleMcq from "@/components/Examinationpaper/AddthetitleMcq";
+import Addfillinblanks from "@/components/Examinationpaper/Addfillinblanks";
+import Addquestionanswer from "@/components/Examinationpaper/Addquestionanswer";
+import Topicpreview from "@/components/Examinationpaper/Topicpreview";
 export default {
   components: {
-    MakeTestpaper,
     AddthetitleMcq, //选择题
     Addfillinblanks, //填空题
     Addquestionanswer, //问答题
-    Topicpreview //题目预览
+    Topicpreview //试卷总预览与修改
   },
   data() {
     return {
       radio: 1, //题目选项
-      TestPaper: []
+      TestPaper: [],//所有题目的信息
+      Testscores:[],//接收获取试卷的信息
+      stycores:null//用于接收子组件传过来的题目分值
     };
   },
   mounted() {
-    // sessionStorage.setItem("testPaperId", 3124);
     this.GetTestPaper();
   },
   methods: {
@@ -51,15 +52,16 @@ export default {
       let _this = this;
       var testPaperId = sessionStorage.getItem("testPaperId");
       if (testPaperId) {
-        _this.axios.get("/TestPaper/GetTestPaper", {
+        _this.axios
+          .get("/TestPaper/GetTestPaper", {
             params: {
               id: testPaperId
             }
           })
           .then(res => {
             if (res.data) {
+              _this.Testscores=res.data
               _this.TestPaper = res.data.questions;
-              console.log(_this.TestPaper)
             }
           })
           .catch(error => {
@@ -67,10 +69,7 @@ export default {
           });
       }
     },
-    /**
-     * 添加选择题数据
-     * @param {object} data 子组件向父组件传入的数据
-     */
+    //用来做添加选择题、填空题、问答题
     addQuestion(data) {
       let _this = this;
       _this.axios.post("/TestPaper/AddQuestionToTestPaper", {
@@ -84,6 +83,7 @@ export default {
           let reData = res.data.data; //操作成功后，返回给前端有用的数据
           reData.redactShow = true;
           _this.formMessage(code, message);
+          _this.GetTestPaper();
           if (code == 1) {
             _this.TestPaper.push(reData);
           }
@@ -92,11 +92,7 @@ export default {
           console.log(error);
         });
     },
-    /**
-     * 操作表单提示消息
-     * @param {Number} code 请求返回参数
-     * @param {String} msg 请求返回参数
-     */
+    // 操作表单提示消息
     formMessage(code, msg) {
       let _this = this;
       let type = "warning";
@@ -121,30 +117,57 @@ export default {
           message = msg;
           break;
       }
-      _this.$message({
-        //确定后提示语句
+      _this.$message({//确定后提示语句
         message: message,
         type: type
       });
     },
+    AllsumUp(datc){//接受所有题目的分值和总分
+      this.stycores = [datc,this.Testscores]
+    },
     // 下一步
     submitMake() {
       let _this = this;
-      _this.$emit("geNext");
+      _this.GetTestPaper()
+      if(_this.Testscores.questions.length>=1&&_this.Testscores.tpTitle!="undefined"){
+        _this.$emit("secondgear",this.stycores);
+      }else{
+        this.$message({
+          message: '请至少填一道题！OK>?----O(∩_∩)O哈哈~',
+          type: 'warning'
+        });
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.redio {
-  span {
-    padding-left: 20px;
-    padding-right: 200px;
-    line-height: 30px;
+.redios {
+  border: 1px solid #ECECEC;
+  box-shadow: 0px 0px 10px 5px #ECECEC;
+  // padding: 20px 0px;
+  margin: 4px 4px;
+  .redio {
+    line-height: 70px;
+    border-bottom: #ECECEC 1px solid;
+    overflow: hidden;
+    span {
+      padding-left: 20px;
+      padding-right: 20px;
+      line-height: 30px;
+    }
+    .el-button--primary{
+      float: right;
+      margin: 15px 30px 15px 0px ;
+    }
   }
-  .el-button{
-    float: right;
+  .redio-content{
+    padding: 20px 20px;
+    border-bottom: #ECECEC 1px solid;
+  }
+  .redio_buttom{
+    padding: 20px;
   }
 }
 </style>

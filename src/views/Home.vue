@@ -454,6 +454,8 @@ a{
           padding: 10px 0px;
         }
       }
-      
+      /deep/ .el-main::-webkit-scrollbar{
+        display: none
+      }
     }
 </style>

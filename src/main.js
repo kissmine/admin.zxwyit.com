@@ -43,13 +43,18 @@ axios.interceptors.response.use((res) => {
 
 // token失效提示
 function failureToken(){
-  // userName用户存在
   if(sessionStorage.getItem('userName')){
-    Message.error("身份过期,请重新登录,3秒后自动跳转");
+    console.log(1)
+    // this.$message({//用不了
+    //   message: '身份过期,请重新登录,3秒后自动跳转',
+    //   type: 'warning'
+    // });
+    alert("身份过期,请重新登录,3秒后自动跳转")
+    console.log(16)
     //重新登录，三秒后跳转
     setTimeout(function() {
       router.push('/')
-    }, 3000);
+    },1500);
     return
   }else{
     router.push('/')

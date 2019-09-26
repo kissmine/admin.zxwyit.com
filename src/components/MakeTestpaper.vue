@@ -1,17 +1,21 @@
 <template>
-  <el-form :model="makeForm" status-icon :rules="rules" ref="makeForm">
-    <el-form-item label="试卷名称" prop="tpTitle" :label-width="formLabelWidth">
-      <el-input type="text" v-model="makeForm.tpTitle" autocomplete="off"></el-input>
-    </el-form-item>
-    <el-form-item label="课程名称" prop="courseName" :label-width="formLabelWidth">
-      <el-select v-model="makeForm.courseName" placeholder="请选择" @change="selectMajor">
-        <el-option v-for="(item,index) in majorData" :key="index" :value="item.courseName"></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="submitMake('makeForm')">下一步</el-button>
-    </el-form-item>
-  </el-form>
+  <!-- 1、试卷信息 -->
+  <div class="message">
+    <el-form :model="makeForm" status-icon :rules="rules" ref="makeForm">
+      <el-form-item label="试卷名称" prop="tpTitle">
+        <el-input type="text" v-model="makeForm.tpTitle" autocomplete="off"></el-input>
+      </el-form-item>
+      <p>* 课程名称</p>
+      <el-form-item prop="courseName">
+        <el-select v-model="makeForm.courseName" placeholder="请选择" @change="selectMajor">
+          <el-option v-for="(item,index) in majorData" :key="index" :value="item.courseName"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item style="text-align:center;">
+        <el-button type="primary" @click="submitMake('makeForm')">下一步</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
 </template>
 
 <script>
@@ -23,27 +27,25 @@ export default {
         tpCourseId: 0, //课程id
         courseName: "" //课程名称
       },
-      formLabelWidth: "100px", //表单lable宽度
       majorData: [], //课程数据
-      rules: {
-        //验证规则
+      rules: {//验证规则
         tpTitle: [{ required: true, message: "请输入名称", trigger: "blur" }],
-        courseName: [
-          { required: true, message: "请选择课程", trigger: "change" }
-        ]
+        courseName: [{ required: true, message: "请选择课程", trigger: "change" }]
       }
-    }
+    };
   },
   mounted() {
     this.majorMessage();
   },
   methods: {
-      /**
+    /**
      * 课程信息查询
      */
     majorMessage() {
       let _this = this;
-      _this.axios.get("/Class/GetAllCourse").then(res => {
+      _this.axios
+        .get("/Class/GetAllCourse")
+        .then(res => {
           _this.majorData = res.data;
         })
         .catch(error => {
@@ -68,7 +70,10 @@ export default {
       var _this = this;
       _this.$refs[formName].validate(valid => {
         if (valid) {
-          _this.axios.post("/TestPaper/MakeTestPaper", _this.makeForm, //body传参
+          _this.axios
+            .post(
+              "/TestPaper/MakeTestPaper",
+              _this.makeForm, //body传参
               {
                 // query传参
                 params: {
@@ -79,8 +84,8 @@ export default {
             .then(res => {
               let data = res.data;
               if (data.code == 1) {
-                _this.$emit('geNext')
-                sessionStorage.setItem('testPaperId',data.data.testPaperId);
+                _this.$emit("firstgear");
+                sessionStorage.setItem("testPaperId", data.data.testPaperId);
               }
             })
             .catch(error => {
@@ -88,14 +93,21 @@ export default {
             });
         }
       });
-    },
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.el-select {
+.message {
+  padding:50px 0px;
+  .el-select {
     display: flex;
     flex: 1;
+  }
+  p {
+    font-size: 14px;
+    color: #606266;
+  }
 }
 </style>

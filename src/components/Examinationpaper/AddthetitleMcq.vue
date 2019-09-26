@@ -1,4 +1,5 @@
 <template>
+  <!-- 1、选择题 -->
   <el-form
     :model="choiceForm"
     status-icon
@@ -11,9 +12,7 @@
     </el-form-item>
     <ul class="redio-ul">
       <li v-for="(item,index) in choiceForm.chooseQuestion" :key="index">
-        <el-checkbox
-          v-model="item.cqIsRight"
-        >{{ liList[index] }}、</el-checkbox>
+        <el-checkbox v-model="item.cqIsRight">{{ liList[index] }}、</el-checkbox>
         <el-input type="text" v-model="item.cqOption" autocomplete="off"></el-input>
         <el-button
           type="danger"
@@ -32,6 +31,7 @@
       <el-button
         type="info"
         round
+        @click="addLi"
         :disabled="choiceForm.chooseQuestion.length>=liList.length"
       >新增选项</el-button>
       <el-button
@@ -48,16 +48,15 @@
 export default {
   data() {
     return {
-      liList: ["A", "B", "C", "D", "E", "F"],
       formLabelWidth: "100px", //表单lable宽度
       choiceForm: {
         tpqScore: 5, //分值
-        questionTitle: "js中数组常见的方法有哪些？", //题目的标题
+        questionTitle: "", //题目的标题
         questionTypeId: 1, //题目的类型 1=选择题 2=填空题 3=问答题
-        chooseQuestion: [
+        chooseQuestion: [//设置默认为四个选项
           {
-            cqOption: "qqq",
-            cqIsRight: false
+            cqOption: "", //选项内容
+            cqIsRight: false //是否为正确答案 true:正确答案 false：不是
           },
           {
             cqOption: "",
@@ -74,6 +73,7 @@ export default {
         ]
       },
       setChoice: {
+        //用来做重置
         tpqScore: 5,
         questionTitle: "",
         questionTypeId: 1,
@@ -100,46 +100,54 @@ export default {
         questionTitle: [
           { required: true, message: "请输入标题", trigger: "blur" }
         ]
-      }
+      },
+      liList: ["A", "B", "C", "D", "E", "F"] //用作添加选项、删除选项
     };
   },
-  methods:{
-      deleteLi(index){
-        var _this=this
-        _this.choiceForm.chooseQuestion[index].cqIsRight=false
-        _this.choiceForm.chooseQuestion[index].cqOption=""
-      },
-      resetForm(){
-        var _this=this
-        _this.choiceForm = JSON.parse(JSON.stringify(_this.setChoice));
-      },
-      AddChoice(iceform){
-        var _this=this
-        var bool=false
-        // console.log(_this.$refs[iceform])
-        _this.$refs[iceform].validate(valid => {
-            if(valid){
-                _this.choiceForm.chooseQuestion.forEach(item => {
-                    if (item.cqIsRight) {
-                    bool = true;
-                    }
-                });
-                if (bool) {
-                    _this.$emit("setChoice", _this.choiceForm);
-                    // 重新定义变量,解除绑定
-                    let choice = JSON.parse(JSON.stringify(_this.setChoice))
-                    // 提交成功后重置
-                    _this.choiceForm = choice;
-                    // _this.$refs['essayForm'].resetFields() //会把传入的参数清空
-                } else {
-                    _this.$message({
-                    message: "最少勾选一个答案",
-                    type: "warning"
-                    });
-                }
+  methods: {
+    //添加题目
+    AddChoice(iceform) {
+      var _this = this;
+      var bool = false;
+      // console.log(_this.$refs[iceform])
+      _this.$refs[iceform].validate(valid => {
+        if (valid) {
+          _this.choiceForm.chooseQuestion.forEach(item => {
+            if (item.cqIsRight) {
+              bool = true;
             }
-        })
-      }
+          });
+          if (bool) {
+            _this.$emit("setChoice", _this.choiceForm);
+            // 重新定义变量,解除绑定
+            let choice = JSON.parse(JSON.stringify(_this.setChoice));
+            // 提交成功后重置
+            _this.choiceForm = choice;
+            // _this.$refs['essayForm'].resetFields() //会把传入的参数清空
+          } else {
+            _this.$message({
+              message: "最少勾选一个答案",
+              type: "warning"
+            });
+          }
+        }
+      });
+    },
+    //删除
+    deleteLi(index) {
+      var _this = this;
+      _this.choiceForm.chooseQuestion.splice(index, 1);
+    },
+    //新增
+    addLi() {
+      var _this = this;
+      _this.choiceForm.chooseQuestion.push({ cqOption: "", cqIsRight: false });
+    },
+    //重置
+    resetForm() {
+      var _this = this;
+      _this.choiceForm = JSON.parse(JSON.stringify(_this.setChoice));
+    }
   }
 };
 </script>
