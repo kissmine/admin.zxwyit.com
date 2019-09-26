@@ -46,13 +46,19 @@ export default {
     };
   },
   methods: {
-    //重置
+    /**
+     * 取消重置表单
+     * @param {Obj} formName 表单对象
+     */
     resetForm(formName) {
       let _this = this;
       _this.$refs[formName].resetFields();
       _this.essayForm = JSON.parse(JSON.stringify(_this.setEssay));
     },
-    //保存题目
+    /**
+     * @{AddEssay} 保存题目
+     * @{formName} String
+    */
     AddEssay(formName){
         var _this=this
         _this.$refs[formName].validate(valid => {

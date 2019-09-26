@@ -250,7 +250,11 @@ export default {
     }
   },
   methods: {
-    // 点击填空
+    /**
+     * 插入填空
+     * @param {Object} data input填空数据
+     * @param {Number} index 节点id
+     */
     insertion(data, index) {
       var elInput = document.getElementById("inputGaps" + index);
       var startPos = elInput.selectionStart; // input 第0个字符到选中的字符
@@ -280,7 +284,11 @@ export default {
         ]
       });
     },
-    // 删除填空题
+    /**
+     * 删除填空
+     * @param {Object} data input填空数据
+     * @param {Number} index 节点id
+     */
     delTitle(data, index) {
       let _this = this;
       // 输入时拆分
@@ -322,7 +330,11 @@ export default {
       data.title = JSON.parse(JSON.stringify(data.tpqQuestion.questionTitle));
       _this.$forceUpdate();
     },
-    // 点击修改分数
+    /**
+     *修改分数
+     * @param {Object} data 题目对象
+     * @param {Number} id 题目取消操作
+     */
     addScore(data, id) {
       let _this = this;
       let paramsBody = {
@@ -344,7 +356,12 @@ export default {
           console.log(error);
         });
     },
-    // 修改题目
+    /**
+     * 编辑题目
+     * @param {Object} data 题目对象
+     * @param {Number} index 数据下标
+     * @param {Number} id 题目取消操作
+     */
     handleEdit(data, index, id) {
       let _this = this;
       switch (id) {
@@ -361,7 +378,12 @@ export default {
       data.redactShow = false;
       _this.$forceUpdate();// 强制Vue 实例重新渲染
     },
-    // 取消修改
+    /**
+     * 取消编辑
+     * @param {Object} data 题目对象
+     * @param {Number} index 数据下标
+     * @param {Number} id 题目取消操作
+     */
     cancelEdit(data, index, id) {
       let _this = this;
       // data.redactShow = true;
@@ -378,7 +400,11 @@ export default {
       }
       _this.$forceUpdate();
     },
-    // 新增选项
+    /**
+     * 新增选项
+     * @param {Object} data 题目对象
+     * @param {Number} index 数据下标
+     */
     addEdit(data, index) {
       let _this = this;
       data.tpqQuestion.chooseQuestion.push({
@@ -386,12 +412,21 @@ export default {
         cqIsRight: false
       });
     },
-    // 删除选项
+    /**
+     * 删除选项
+     * @param {Number} index 选择题数据下标
+     * @param {Number} liIndex 第几个选择下标
+     */
     deleteLi(index, liIndex) {
       let _this = this;
       _this.choiceData[index].tpqQuestion.chooseQuestion.splice(liIndex, 1);
     },
-    // 保存更改
+    /**
+     * 保存更改
+     * @param {Object} data 当前选项数据对象
+     * @param {Number} index 数据下标
+     * @param {Number} id 题目取消操作
+     */
     saveEdit(data, index, id) {
       let _this = this;
       _this.sumData(); //总分
@@ -440,7 +475,12 @@ export default {
           console.log(error);
         });
     },
-    // 删除题目
+    /**
+     * 删除题目
+     * @param {Object} data 题目对象
+     * @param {Number} index 数据下标
+     * @param {Number} id 题目取消操作
+     */
     delEdit(data, index, id) {
       let _this = this;
       _this
@@ -488,7 +528,11 @@ export default {
           });
         });
     },
-    // 操作表单提示消息
+    /**
+     * 操作表单提示消息
+     * @param {Number} code 请求返回参数
+     * @param {String} msg 请求返回参数
+     */
     formMessage(code, msg) {
       let _this = this;
       let type = "warning";
@@ -518,8 +562,13 @@ export default {
       });
     }
   },
+  /**
+   * 计算属性
+  */
   computed: {
-    //选择题分数
+    /**
+     * 选择题分数
+    */
     sumChoice() {
       let _this = this;
       let sum = 0;
@@ -529,7 +578,9 @@ export default {
       this.Allofthescores.cumchoice = sum;
       return sum;
     },
-    //填空题分数
+    /**
+     * 填空题分数
+    */
     sumGap() {
       let _this = this;
       let sum = 0;
@@ -542,7 +593,9 @@ export default {
       });
       return sum;
     },
-    //填空题分数
+    /**
+     * 填空题分数
+    */
     sumEssay() {
       let _this = this;
       let sum = 0;
@@ -552,7 +605,9 @@ export default {
       this.Allofthescores.cumessay = sum;
       return sum;
     },
-    //总分数
+    /**
+     * 总分数
+    */
     sumData() {
       let _this = this;
       let sum = _this.sumChoice + _this.sumGap + _this.sumEssay;

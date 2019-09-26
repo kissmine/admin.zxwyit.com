@@ -41,6 +41,10 @@ import Makeaccomplish from "@/components/Makeaccomplish"
       };
     },
     methods: {
+      /**
+       * 步骤切换
+       * @param {Object} data 传给完成制作的分值
+      */
       Sharedfile(data) {
         if(data!="undefined"){
           this.Testscores=data

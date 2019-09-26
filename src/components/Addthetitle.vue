@@ -47,7 +47,9 @@ export default {
     this.GetTestPaper();
   },
   methods: {
-    // 获取试卷信息
+    /**
+     *获取试卷信息
+     * */ 
     GetTestPaper() {
       let _this = this;
       var testPaperId = sessionStorage.getItem("testPaperId");
@@ -69,7 +71,10 @@ export default {
           });
       }
     },
-    //用来做添加选择题、填空题、问答题
+     /**
+     * 用来做添加选择题、填空题、问答题
+     * @param {object} data 子组件向父组件传入的数据
+     */
     addQuestion(data) {
       let _this = this;
       _this.axios.post("/TestPaper/AddQuestionToTestPaper", {
@@ -92,7 +97,11 @@ export default {
           console.log(error);
         });
     },
-    // 操作表单提示消息
+    /**
+     * 操作表单提示消息
+     * @param {Number} code 请求返回参数
+     * @param {String} msg 请求返回参数
+     */
     formMessage(code, msg) {
       let _this = this;
       let type = "warning";
@@ -125,7 +134,9 @@ export default {
     AllsumUp(datc){//接受所有题目的分值和总分
       this.stycores = [datc,this.Testscores]
     },
-    // 下一步
+    /**
+     * 下一步
+     * */ 
     submitMake() {
       let _this = this;
       _this.GetTestPaper()

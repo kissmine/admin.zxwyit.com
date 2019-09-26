@@ -77,7 +77,9 @@ export default {
     };
   },
   methods: {
-    //点击插入填空
+    /**
+     * 点击插入填空
+    */
     insertion(){
       var _this=this
       var inputGaps=document.getElementById("inputGaps")
@@ -86,10 +88,8 @@ export default {
       var result = text.substring(0, cml) + "▁" + text.substring(cml)//截取字符串的方法
       inputGaps.value=result
       _this.gapForm.questionTitle=inputGaps.value
-      // console.log(_this.gapForm.questionTitle)
       _this.gapTitle=_this.gapForm.questionTitle.split("▁");//题目预览
       _this.storeValue = JSON.parse(JSON.stringify(_this.gapForm.questionTitle));
-      // console.log(_this.storeValue)
       _this.gapForm.fillQuestion.push({
         fqOrder: 1, //填空序号
         fqAnswer: "", //第一个空的答案
@@ -100,7 +100,9 @@ export default {
         ]
       });
     },
-    //键盘监听事件，监听文本框内容
+    /**
+     * @{delTitle} 键盘监听事件，监听文本框内容
+    */
     delTitle(){
       var _this=this
       _this.gapTitle = _this.gapForm.questionTitle.split("▁");
@@ -131,19 +133,27 @@ export default {
         _this.storeValue = JSON.parse(JSON.stringify(_this.gapForm.questionTitle));
       }
     },
-    // 重置
+    /**
+     * 取消重置表单提示
+     * @param {Obj} formName 表单对象
+     */ 
     resetForm(formName) {
       let _this = this;
       _this.$refs[formName].resetFields();
       _this.resetContent();
     },
-    // 是否重置
+    /**
+     * 取消重置表单内容
+     */
     resetContent() {
       let _this = this;
       _this.gapTitle = [];
       _this.gapForm = JSON.parse(JSON.stringify(_this.setGap));
     },
-    //保存题目
+    /**
+     * @{AddGap} 保存题目
+     * @param {Obj} formName 表单对象
+    */
     AddGap(formName) {
       var _this = this;
       // console.log(_this.$refs[formName].validate)

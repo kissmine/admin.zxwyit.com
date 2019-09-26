@@ -105,7 +105,9 @@ export default {
     };
   },
   methods: {
-    //添加题目
+    /**
+     * 添加题目
+    */
     AddChoice(iceform) {
       var _this = this;
       var bool = false;
@@ -133,17 +135,24 @@ export default {
         }
       });
     },
-    //删除
+    /**
+     * 删除选项
+     * @param {Number} index 选项下标
+     */
     deleteLi(index) {
       var _this = this;
       _this.choiceForm.chooseQuestion.splice(index, 1);
     },
-    //新增
+    /**
+     * 增加题目
+     */
     addLi() {
       var _this = this;
       _this.choiceForm.chooseQuestion.push({ cqOption: "", cqIsRight: false });
     },
-    //重置
+    /**
+     * 重置
+    */
     resetForm() {
       var _this = this;
       _this.choiceForm = JSON.parse(JSON.stringify(_this.setChoice));
