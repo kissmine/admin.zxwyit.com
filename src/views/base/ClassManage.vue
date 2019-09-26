@@ -133,7 +133,6 @@
 export default {
   data() {
     return {
-      bool: [], //删除按钮禁用
       tableData: [], //所有班级信息数据
       allCourse: [], //所有专业名字数据
       allTeacher: [], //所有老师名字数据
@@ -262,10 +261,7 @@ export default {
         .then(() => {
           this.axios
             .get(
-              "http://192.168.1.188:12/api/Class/RemoveClass?classId=" +
-                row.classId +
-                ""
-            )
+              "http://192.168.1.188:12/api/Class/RemoveClass?classId=" + row.classId,)
             .then(res => {
               if (res.data.code == 1) {
                 _this.list(); //实时刷新
@@ -304,15 +300,8 @@ export default {
             res.data[i].classCreateTime = new Date(
               res.data[i].classCreateTime
             ).toLocaleDateString();
-            if (res.data[i].classStudents >= 1) {
-              _this.bool.push(true);
-            } else {
-              _this.bool.push(false);
-            }
           }
           _this.tableData = res.data;
-          _this.tableData.push(_this.bool);
-          console.log(_this.tableData);
         })
         .catch(function(error) {
           console.log(error);
