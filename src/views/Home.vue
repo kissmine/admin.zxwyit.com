@@ -455,6 +455,12 @@ a{
           padding: 10px 0px;
         }
       }
+<<<<<<< HEAD
       
+=======
+      /deep/ .el-main::-webkit-scrollbar{
+        display: none
+      }
+>>>>>>> litaoqin
     }
 </style>
