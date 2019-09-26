@@ -40,7 +40,12 @@
         <el-table-column label="操作" width="145">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="scope.row.classStudents >0 ? true: false ">删除</el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.$index, scope.row)"
+              :disabled="scope.row.classStudents >0 ? true: false "
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -128,13 +133,13 @@
 export default {
   data() {
     return {
-      bool:[],  //删除按钮禁用
-      tableData: [],//所有班级信息数据
-      allCourse: [],//所有专业名字数据
-      allTeacher: [],//所有老师名字数据
+      bool: [], //删除按钮禁用
+      tableData: [], //所有班级信息数据
+      allCourse: [], //所有专业名字数据
+      allTeacher: [], //所有老师名字数据
       Hold_userName: [], //暂存老师名字数据
       Hold_courseName: [], //暂存专业名字数据
-      Hold_className: [],//暂存班级名称数据
+      Hold_className: [], //暂存班级名称数据
       Modalboxdisplay: false, //修改模态框隐藏
       centerDialogVisible: false, //新增模态框隐藏
       //增加双向绑定
@@ -145,10 +150,10 @@ export default {
       },
       //修改双向绑定
       TwowayBinding: {
-        className: "",//班级名字
-        majorCouse: "",//专业
-        teacher: "",//老师
-        classId: ""//班级id
+        className: "", //班级名字
+        majorCouse: "", //专业
+        teacher: "", //老师
+        classId: "" //班级id
       }
     };
   },
@@ -157,10 +162,10 @@ export default {
     handleEdit(index, row) {
       var _this = this;
       _this.Modalboxdisplay = true;
-      _this.TwowayBinding.classId = row.classId;//班级id
-      _this.Hold_userName = row.userName;//暂存老师名字
-      _this.Hold_courseName = row.courseName;//暂存专业名字
-      _this.Hold_className = row.className;//暂存班级名字
+      _this.TwowayBinding.classId = row.classId; //班级id
+      _this.Hold_userName = row.userName; //暂存老师名字
+      _this.Hold_courseName = row.courseName; //暂存专业名字
+      _this.Hold_className = row.className; //暂存班级名字
     },
     alterClass() {
       var _this = this;
@@ -179,7 +184,7 @@ export default {
           })
           .then(res => {
             if (res.data.code == 1) {
-              _this.list();//实时刷新
+              _this.list(); //实时刷新
               _this.$message({
                 message: "添加成功",
                 type: "success"
@@ -192,12 +197,16 @@ export default {
             } else {
               _this.$message.error("系统错误，请联系管理员");
             }
+            _this.TwowayBinding.className = "";
+            _this.TwowayBinding.majorCouse = "";
+            _this.TwowayBinding.teacher = "";
+            _this.TwowayBinding.classId = "";
           })
           .catch(function(error) {
             console.log(error);
           });
       } else {
-        _this.$message.error("不能为空，必须为中文");
+        _this.$message.error("不能有一项为空，请完善");
       }
     },
     //新增
@@ -220,7 +229,7 @@ export default {
           })
           .then(res => {
             if (res.data.code == 1) {
-              _this.list();//实时刷新
+              _this.list(); //实时刷新
               _this.$message({
                 message: "添加成功",
                 type: "success"
@@ -259,7 +268,7 @@ export default {
             )
             .then(res => {
               if (res.data.code == 1) {
-                _this.list();//实时刷新
+                _this.list(); //实时刷新
                 _this.$message({
                   message: "删除成功",
                   type: "success"
@@ -295,15 +304,15 @@ export default {
             res.data[i].classCreateTime = new Date(
               res.data[i].classCreateTime
             ).toLocaleDateString();
-            if(res.data[i].classStudents>=1){
-                _this.bool.push(true)
-              }else{
-                _this.bool.push(false)
-              }
+            if (res.data[i].classStudents >= 1) {
+              _this.bool.push(true);
+            } else {
+              _this.bool.push(false);
+            }
           }
           _this.tableData = res.data;
-           _this.tableData.push(_this.bool)
-          console.log(_this.tableData)
+          _this.tableData.push(_this.bool);
+          console.log(_this.tableData);
         })
         .catch(function(error) {
           console.log(error);
@@ -355,8 +364,8 @@ export default {
 .box-card {
   z-index: 666;
 }
-.el-button{
+.el-button {
   width: 45%;
-  text-align: center
+  text-align: center;
 }
 </style>
