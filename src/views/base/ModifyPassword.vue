@@ -29,7 +29,7 @@ export default {
     // 旧密码
     var former = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error('请输入旧密码'));
         } else {
           callback();
         }
@@ -37,7 +37,7 @@ export default {
     //新密码
       var validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error('请输入新密码'));
         } else {
           if (this.ruleForm.checkPass !== '') {
             this.$refs.ruleForm.validateField('checkPass');
@@ -48,7 +48,7 @@ export default {
       //确认密码
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请再次输入密码'));
+          callback(new Error('请再次输入新密码'));
         } else if (value !== this.ruleForm.pass) {
           callback(new Error('两次输入密码不一致!'));
         } else {
@@ -84,10 +84,10 @@ export default {
         this.$refs[formName].validate((valid) => {
           if (valid) { 
               if(this.ruleForm.pass.length>=6){
-                this.axios.get("/User/ModifyPassword?uid="+sessionStorage.userUid+"&oldPassword="+this.ruleForm.formerpass+"&newPassword="+this.ruleForm.pass,
+                this.axios.get("/User/ModifyPassword?uid="+sessionStorage.userUid+"&oldPassword="+this.ruleForm.formerPass+"&newPassword="+this.ruleForm.pass,
                 ).then(function(res){
                   if(res.data.code=='1'){
-                        that.ruleForm.formerpass='';  //旧密码重新赋值为空
+                        that.ruleForm.formerPass='';  //旧密码重新赋值为空
                         that.ruleForm.pass='';        //新密码重新赋值为空
                         that.ruleForm.checkPass='';   //确认密码重新赋值为空
                         that.$message({
