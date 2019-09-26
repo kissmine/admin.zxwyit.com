@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div id="ClassManage">
     <!-- 渲染 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <i class="el-icon-circle-plus-outline" style="margin-right:5px"></i>
-        <span @click="updatere">新增班级</span>
+        <span @click="addButton">新增班级</span>
       </div>
       <el-table :data="tableData" style="width: 100%;">
         <el-table-column label="#">
@@ -51,13 +51,12 @@
       </el-table>
       <!-- 增加 -->
       <el-dialog title="新增班级" :visible.sync="centerDialogVisible" width="30%" center>
-        <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form :model="RuleForm" ref="RuleForm" label-width="100px" class="demo-ruleForm">
           <el-form-item label="班级名称" prop="name">
-            <el-input v-model="ruleForm.className"></el-input>
+            <el-input v-model="RuleForm.className"></el-input>
           </el-form-item>
-
           <el-form-item label="专业课程" prop="majorCouse">
-            <el-select v-model="ruleForm.majorCouse" placeholder="请选择课程">
+            <el-select v-model="RuleForm.majorCouse" placeholder="请选择课程">
               <el-option
                 v-for="(item,index) in allCourse"
                 :key="index"
@@ -67,8 +66,8 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="授课老师" prop="teacher">
-            <el-select v-model="ruleForm.teacher" placeholder="请选择老师">
+          <el-form-item label="授课老师" prop="teacherName">
+            <el-select v-model="RuleForm.teacherName" placeholder="请选择老师">
               <el-option
                 v-for="(item,index) in allTeacher"
                 :key="index"
@@ -107,8 +106,8 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="授课老师" prop="teacher">
-            <el-select v-model="TwowayBinding.teacher" :placeholder="Hold_userName">
+          <el-form-item label="授课老师" prop="teacherName">
+            <el-select v-model="TwowayBinding.teacherName" :placeholder="Hold_userName">
               <el-option
                 v-for="(item,index) in allTeacher"
                 :key="index"
@@ -142,53 +141,56 @@ export default {
       Modalboxdisplay: false, //修改模态框隐藏
       centerDialogVisible: false, //新增模态框隐藏
       //增加双向绑定
-      ruleForm: {
+      RuleForm: {
         className: "",
         majorCouse: "",
-        teacher: ""
+        teacherName: ""
       },
       //修改双向绑定
       TwowayBinding: {
         className: "", //班级名字
         majorCouse: "", //专业
-        teacher: "", //老师
+        teacherName: "", //老师
         classId: "" //班级id
       }
     };
   },
   methods: {
     //修改
+    //修改按钮
     handleEdit(index, row) {
       var _this = this;
-      _this.Modalboxdisplay = true;
+      _this.Modalboxdisplay = true;//打开模态框
       _this.TwowayBinding.classId = row.classId; //班级id
       _this.Hold_userName = row.userName; //暂存老师名字
       _this.Hold_courseName = row.courseName; //暂存专业名字
       _this.Hold_className = row.className; //暂存班级名字
     },
+    //修改模态框确认按钮
     alterClass() {
       var _this = this;
+      //判断不能为空
       if (
         _this.TwowayBinding.className != "" &&
         _this.TwowayBinding.majorCouse != "" &&
-        _this.TwowayBinding.teacher != "" &&
+        _this.TwowayBinding.teacherName != "" &&
         _this.TwowayBinding.classId != ""
       ) {
-        this.axios
+        _this.axios
           .post("/Class/ModifyClass", {
             className: _this.TwowayBinding.className,
             classCourseId: _this.TwowayBinding.majorCouse,
-            classTeacherId: _this.TwowayBinding.teacher,
+            classTeacherId: _this.TwowayBinding.teacherName,
             classId: _this.TwowayBinding.classId
           })
           .then(res => {
             if (res.data.code == 1) {
-              _this.list(); //实时刷新
+              _this.queryClass(); //实时刷新
               _this.$message({
                 message: "添加成功",
                 type: "success"
               });
-              _this.Modalboxdisplay = false;
+              _this.Modalboxdisplay = false;//退出模态框
             } else if (res.data.code == -1) {
               _this.$message.error("不可添加");
             } else if (res.data.code == -2) {
@@ -196,9 +198,10 @@ export default {
             } else {
               _this.$message.error("系统错误，请联系管理员");
             }
+            //退出时清空值
             _this.TwowayBinding.className = "";
             _this.TwowayBinding.majorCouse = "";
-            _this.TwowayBinding.teacher = "";
+            _this.TwowayBinding.teacherName = "";
             _this.TwowayBinding.classId = "";
           })
           .catch(function(error) {
@@ -209,31 +212,34 @@ export default {
       }
     },
     //新增
-    updatere() {
+    //新增按钮
+    addButton() {
       var _this = this;
-      _this.centerDialogVisible = true;
+      _this.centerDialogVisible = true;//打开模态框
     },
+    //新增模态框确认按钮
     addClass() {
       var _this = this;
+      //判断不能为空
       if (
-        _this.ruleForm.className != "" &&
-        _this.ruleForm.majorCouse != "" &&
-        _this.ruleForm.teacher != ""
+        _this.RuleForm.className != "" &&
+        _this.RuleForm.majorCouse != "" &&
+        _this.RuleForm.teacherName != ""
       ) {
         this.axios
           .post("/Class/AddClass", {
-            className: _this.ruleForm.className,
-            classCourseId: _this.ruleForm.majorCouse,
-            classTeacherId: _this.ruleForm.teacher
+            className: _this.RuleForm.className,//班级名字
+            classCourseId: _this.RuleForm.majorCouse,//专业名字
+            classTeacherId: _this.RuleForm.teacherName//老师名字
           })
           .then(res => {
             if (res.data.code == 1) {
-              _this.list(); //实时刷新
+              _this.queryClass(); //实时刷新
               _this.$message({
                 message: "添加成功",
                 type: "success"
               });
-              _this.centerDialogVisible = false;
+              _this.centerDialogVisible = false;//退出模态框
             } else if (res.data.code == -1) {
               _this.$message.error("不可添加");
             } else if (res.data.code == -2) {
@@ -241,10 +247,9 @@ export default {
             } else {
               _this.$message.error("系统错误，请联系管理员");
             }
-            console.log(res.data.code);
           })
           .catch(function(error) {
-            console.log(error);
+            _this.$message.error("系统错误，请联系管理员");
           });
       } else {
         _this.$message.error("不能为空，必须为中文");
@@ -259,12 +264,12 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.axios
+          _this.axios
             .get(
               "http://192.168.1.188:12/api/Class/RemoveClass?classId=" + row.classId,)
             .then(res => {
               if (res.data.code == 1) {
-                _this.list(); //实时刷新
+                _this.queryClass(); //实时刷新
                 _this.$message({
                   message: "删除成功",
                   type: "success"
@@ -276,50 +281,49 @@ export default {
               }
             })
             .catch(function(error) {
-              console.log(error);
+              _this.$message.error("系统错误，请联系管理员");
             });
         })
         .catch(() => {
-          this.$message({
+          _this.$message({
             type: "info",
             message: "已取消删除"
           });
         });
     },
     //查询所有班级
-    list() {
+    queryClass() {
       var _this = this;
-      this.axios
+      _this.axios
         .get("/Class/GetAllClass")
         .then(res => {
-          // console.log(res.data)
           //开班日期只留下年月日
           for (var i = 0; i < res.data.length; i++) {
             //循环出编号
             res.data[i].id = i + 1;
             res.data[i].classCreateTime = new Date(
-              res.data[i].classCreateTime
+            res.data[i].classCreateTime
             ).toLocaleDateString();
           }
           _this.tableData = res.data;
         })
         .catch(function(error) {
-          console.log(error);
+           _this.$message.error("系统错误，请联系管理员");
         });
     }
   },
   //渲染
   created() {
+    var _this=this
     //调用查询
-    this.list();
-
+    _this.queryClass();
     //获取所有专业
-    this.axios.get("/Class/GetAllCourse").then(res => {
-      this.allCourse = res.data;
+    _this.axios.get("/Class/GetAllCourse").then(res => {
+      _this.allCourse = res.data;
     });
     //获取所有老师
-    this.axios.get("/User/GetTeachers").then(res => {
-      this.allTeacher = res.data;
+    _this.axios.get("/User/GetTeachers").then(res => {
+      _this.allTeacher = res.data;
     });
   }
 };
