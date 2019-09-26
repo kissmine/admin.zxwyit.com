@@ -5,9 +5,9 @@
         <p class="box-p"><span @click="add()" ><i class="el-icon-circle-plus-outline"></i>新增角色</span></p>
         <!-- 新增角色弹框-->
         <el-dialog title="新增角色信息" :visible.sync="dialogFormVisible">
-          <el-form :model="form">
+          <el-form :model="Form">
             <el-form-item label="角色名称" :label-width="formLabelWidth">
-              <el-input v-model="form.name" autocomplete="off"></el-input>
+              <el-input v-model="Form.name" autocomplete="off"></el-input>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -16,10 +16,10 @@
           </div>
         </el-dialog>
         <!-- 编辑角色弹框 -->
-        <el-dialog title="修改角色信息" :visible.sync="bool">
+        <el-dialog title="修改角色信息" :visible.sync="modifier">
           <el-form >
             <el-form-item label="角色名称" :label-width="formLabelWidth">
-              <el-input  v-model="uname.userTypeTypeName" autocomplete="off"></el-input>
+              <el-input  v-model="unames" autocomplete="off"></el-input>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -27,7 +27,7 @@
             <el-button type="primary" @click="affirms">确 定</el-button>
           </div>
         </el-dialog>
-        <!-- 用户表 -->
+        <!-- 用户信息表格 -->
         <template>
           <el-table
             :data="tableData"
@@ -60,13 +60,14 @@
 export default {
     data() {
       return {
-        bool:false,     //编辑角色
+        modifier:false,     //编辑角色
         dialogFormVisible: false, //新增角色框是否弹出，false不弹出，true弹出
         tableData:[],   //请求的角色信息，用一个空数组接受
-        form: {
+        Form: {
           name: ''  //新增角色输入框的值
         },
-        uname:'',   //编辑角色输入框的值
+        uname:'',   //编辑角色的信息
+        unames:'',   //编辑角色名称
         formLabelWidth: '100px' //"角色信息"文字的宽度
       }
     },
@@ -78,14 +79,14 @@ export default {
       // 取消
       cancel(){
         this.dialogFormVisible=false
-        this.bool=false
+        this.modifier=false
       },
       // 新增角色确认
       affirm(){
         var than=this
         var chin=/^[\u4e00-\u9fa5]{0,}$/
-        if(chin.test(than.form.name)){
-          than.axios.post('/UserType/AddUserRole?userRoleName='+than.form.name,
+        if(chin.test(than.Form.name)){
+          than.axios.post('/UserType/AddUserRole?userRoleName='+than.Form.name,
           ).then(function(res){
             // console.log(res.data)
             if(res.data.code==1){
@@ -105,15 +106,17 @@ export default {
       },
       // 编辑
       handleEdit(index, row) {
-        this.bool=true
-        this.uname=row
+        var _this=this
+        _this.modifier=true
+        _this.uname=row
+        _this.unames=row.userTypeTypeName
       },
       // 编辑角色确认
       affirms(){
         var than=this
         var chin=/^[\u4e00-\u9fa5]{0,}$/  //中文正则表达式
-        if(chin.test(than.uname.userTypeTypeName)){
-          than.axios.post('/UserType/ModifyUserRole?id='+than.uname.userTypeId+'&userRoleName='+than.uname.userTypeTypeName,
+        if(chin.test(than.unames)){
+          than.axios.post('/UserType/ModifyUserRole?id='+than.uname.userTypeId+'&userRoleName='+than.unames,
           ).then(function(res){
             // console.log(res.data)
             if(res.data.code==1){
@@ -121,7 +124,7 @@ export default {
               type: 'success',
               message: '修改成功！'
               });
-              than.bool=false
+              than.modifier=false
             }else{
               than.$message.error('修改失败！');
             }
@@ -175,7 +178,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 /* 加号图标 */
 .el-icon-circle-plus-outline{
   margin-right: 6px;
