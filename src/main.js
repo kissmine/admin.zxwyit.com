@@ -9,7 +9,7 @@ import VueAxios from "vue-axios";
 
 
 Vue.config.productionTip = false;
-axios.defaults.baseURL = "http://192.168.1.188:/api";
+axios.defaults.baseURL = "http://192.168.1.188:12/api";
 Vue.use(VueAxios, axios);
 Vue.use(ElementUI);
 
@@ -33,7 +33,7 @@ axios.interceptors.response.use((res) => {
   // 对响应错误做点什么 token 已过期
   //获取状态码
   const {status} = error.response;
-  console.log(status)
+  console.log(status+"---8888")
   if(status === 401) {
     failureToken();
   }
@@ -43,13 +43,13 @@ axios.interceptors.response.use((res) => {
 
 // token失效提示
 function failureToken(){
-  // userName用户存在
   if(sessionStorage.getItem('userName')){
-    Message.error("身份过期,请重新登录,3秒后自动跳转");
+    console.log(1)
+    alert("身份过期,请重新登录,3秒后自动跳转")
     //重新登录，三秒后跳转
     setTimeout(function() {
       router.push('/')
-    }, 3000);
+    },1500);
     return
   }else{
     router.push('/')
