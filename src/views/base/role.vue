@@ -88,7 +88,6 @@ export default {
         if(chin.test(than.Form.name)){
           than.axios.post('/UserType/AddUserRole?userRoleName='+than.Form.name,
           ).then(function(res){
-            // console.log(res.data)
             if(res.data.code==1){
               than.$message({
               type: 'success',
@@ -118,7 +117,6 @@ export default {
         if(chin.test(than.unames)){
           than.axios.post('/UserType/ModifyUserRole?id='+than.uname.userTypeId+'&userRoleName='+than.unames,
           ).then(function(res){
-            // console.log(res.data)
             if(res.data.code==1){
               than.$message({
               type: 'success',
@@ -144,7 +142,6 @@ export default {
         }).then(() => {
           than.axios.post('/UserType/RemoveUserRole?userRoleId='+row.userTypeId,
           ).then(function(res){
-            // console.log(res.data)
             if(res.data.code==1){
               than.$message({
               type: 'success',
