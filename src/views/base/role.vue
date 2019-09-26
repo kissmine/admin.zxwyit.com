@@ -74,12 +74,14 @@ export default {
     methods: {
       // 新增角色
       add(){
-        this.dialogFormVisible=true
+        var than=this
+        than.dialogFormVisible=true
       },
       // 取消
       cancel(){
-        this.dialogFormVisible=false
-        this.modifier=false
+        var than=this
+        than.dialogFormVisible=false
+        than.modifier=false
       },
       // 新增角色确认
       affirm(){
@@ -106,10 +108,10 @@ export default {
       },
       // 编辑
       handleEdit(index, row) {
-        var _this=this
-        _this.modifier=true
-        _this.uname=row
-        _this.unames=row.userTypeTypeName
+        var than=this
+        than.modifier=true
+        than.uname=row
+        than.unames=row.userTypeTypeName
       },
       // 编辑角色确认
       affirms(){
