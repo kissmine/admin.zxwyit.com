@@ -147,7 +147,7 @@ export default {
             if(res.data.code==1){
               than.$message({
               type: 'success',
-              message: '删除成功！'
+              message: '删除成功！'  
               });
               than.RoleInfo()
             }else{
