@@ -27,6 +27,9 @@
 export default {
      data() {
     // 旧密码
+    // rule 返回一个object对象，在这里没有用到
+    // value 返回一个输入框的值
+    // callback 回调函数
     var former = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入旧密码'));
@@ -63,6 +66,7 @@ export default {
         },
         rules: {
         //  旧密码
+        // 表单验证规则
           formerPass: [
             { validator: former, trigger: 'blur' }
           ],
@@ -80,42 +84,47 @@ export default {
     methods: {
       // 修改密码提交
       submitForm(formName) {
-          var that=this
-        this.$refs[formName].validate((valid) => {
+        var _this=this;
+        _this.$refs[formName].validate((valid) => {
           if (valid) { 
-              if(this.ruleForm.pass.length>=6){
-                this.axios.get("/User/ModifyPassword?uid="+sessionStorage.userUid+"&oldPassword="+this.ruleForm.formerPass+"&newPassword="+this.ruleForm.pass,
+              if(_this.ruleForm.pass.length>=6){
+                // sessionStorage.userUid     用户唯一表示符
+                // _this.ruleForm.formerPass  旧密码
+                // _this.ruleForm.pass        新密码
+                _this.axios.get("/User/ModifyPassword?uid="+sessionStorage.userUid+"&oldPassword="+_this.ruleForm.formerPass+"&newPassword="+_this.ruleForm.pass,
                 ).then(function(res){
                   if(res.data.code=='1'){
-                        that.ruleForm.formerPass='';  //旧密码重新赋值为空
-                        that.ruleForm.pass='';        //新密码重新赋值为空
-                        that.ruleForm.checkPass='';   //确认密码重新赋值为空
-                        that.$message({
+                        _this.ruleForm.formerPass='';  //旧密码重新赋值为空
+                        _this.ruleForm.pass='';        //新密码重新赋值为空
+                        _this.ruleForm.checkPass='';   //确认密码重新赋值为空
+                        _this.$message({
                             message: '修改成功',
                             type: 'success'
                         });
-                        that.$router.push({path:'/login'})    //修改成功后跳到登录页面
+                        _this.$router.push({path:'/login'})    //修改成功后跳到登录页面
                         sessionStorage.removeItem("token")    //修改成功后清除会话存储的token（令牌）值
                     }else if(res.data.code=='-3'){
-                        that.$message.error('旧密码错误！');
+                        _this.$message.error('旧密码错误！');
                     }else if(res.data.code=='-2'){
-                        that.$message.error('旧密码不能为空！');
+                        _this.$message.error('旧密码不能为空！');
                     }else {
-                        that.$message.error('其它错误！'); 
+                        _this.$message.error('其它错误！'); 
                     }
                 }).catch(function(req){
-                    that.$message.error('修改失败');
+                    _this.$message.error('修改失败');
                 })
             }else{
-                that.$message.error('密码不能少于6位！');
+                _this.$message.error('密码不能少于6位！');
             }
           } else {
             return false;
           }
         });
       },
+      // 重置
       resetForm(formName) {
-        this.$refs[formName].resetFields();
+        var _this=this;
+        _this.$refs[formName].resetFields();
       }
     }
 }
