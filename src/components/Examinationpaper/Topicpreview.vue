@@ -429,7 +429,6 @@ export default {
      */
     saveEdit(data, index, id) {
       let _this = this;
-      _this.sumData(); //总分
       let boolen = false;
       if (id == 1) {
         data.tpqQuestion.chooseQuestion.forEach(item => {
