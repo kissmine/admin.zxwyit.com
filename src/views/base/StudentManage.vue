@@ -24,7 +24,7 @@
                 <el-dialog
                 :title="popUptitle"
                 :visible.sync="centerDialogVisible"
-                width="27%"
+                width="400px"
                 center
                 >
                     <!-- 添加学生信息表单 -->
@@ -70,7 +70,7 @@
                         <el-form-item>
                             <el-button v-show="increased" type="primary" @click="submitForm('ruleForm')">创建</el-button>
                             <el-button v-show="amend" type="primary" @click="AlterPe('ruleForm')">修改</el-button>
-                            <el-button @click="resetForm()">取消</el-button>
+                            <el-button @click="resetForm('ruleForm')">取消</el-button>
                         </el-form-item>
                     </el-form>
                     <!-- 添加学生信息表单结束 -->
@@ -136,7 +136,7 @@
                 <template slot-scope="scope">
                     <el-button
                     size="mini"
-                    @click="handleEdit(scope.$scope, scope.row)">编辑</el-button>
+                    @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                     <el-button
                     size="mini"
                     type="danger"
@@ -167,31 +167,32 @@ export default {
         //学生唯一标识符
         stuUid:'',
         Classval:'',
+        Index:"",
         // 添加表单验证数据
         ruleForm: {
-            name: '',
-            classNum: '',
-            dater: '',
-            phone:'',
-            radio:'男',
-            passwo:''
+            name: '',//用户的绑定数据
+            classNum: '',//班级编号的绑定数据
+            dater: '',//生日的绑定数据
+            phone:'',//手机号的绑定数据
+            radio:'男',//性别的绑定数据
+            passwo:''//密码的绑定数据
         },
         rules: {
-          name: [
+          name: [//用户的判断
             { required: true, message: '请输入学生名字', trigger: 'blur' }
             // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
           ],
-          classNum: [
+          classNum: [//班级的判断
             { required: true, message: '请选择班级', trigger: 'change' }
           ],
-          dater: [
+          dater: [//生日日期的判断
             { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
           ],
-          phone: [
+          phone: [//手机号的判断
             { required: true, message: '请输入手机号', trigger: 'blur' },
             { min: 11, max: 11, message: '手机号必须是11位', trigger: 'blur' }
           ],
-          passwo: [
+          passwo: [//密码的判断
             { required: true, message: '请输入密码', trigger: 'blur' },
             { min: 6, max: 111, message: '密码必须大于6位', trigger: 'blur' }
           ]
@@ -201,17 +202,17 @@ export default {
     methods: {
         //编辑
         handleEdit(index, row) {
-            console.log(index, row);
+            // console.log(row.stuBirthDay = new Date(row.stuBirthDay))
             var _this = this
+            _this.Index = index
             _this.amend = true,
             _this.increased = false,
             _this.centerDialogVisible = true
             _this.popUptitle = "修改学生信息"
-            console.log(row)
             _this.ruleForm = {
                 name:row.stuName,
                 classNum:row.className,
-                dater:parseInt(row.stuBirthDay),
+                dater:new Date(row.stuBirthDay),
                 phone:row.stuMobile,
                 radio:row.stuSex,
                 passwo:row.stuPassword
@@ -219,7 +220,7 @@ export default {
             _this.stuUid = row.stuUid
         },
         //删除
-        handleDelete(index, row) {
+        handleDelete(index, row){
             var _this = this
             _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
                 confirmButtonText: '确定',
@@ -233,7 +234,8 @@ export default {
                             type: 'success',
                             message: '删除成功!'
                         });
-                        _this.Refresh(row.classId)
+                        _this.tableData.splice(index,1)
+                        // _this.Refresh(row.classId)
                     }else{
                         _this.$message({
                             showClose: true,
@@ -255,12 +257,12 @@ export default {
         Alter(val){
             var _this = this
             _this.Classval = val
-             _this.Refresh(val);
+            _this.Refresh(val);
         },
         Altere(val){
-            console.log(val)
             var _this = this
             _this.Classval = val
+            
         },
         // 增加学生
         increase(){
@@ -269,8 +271,11 @@ export default {
             _this.popUptitle = "新增学生信息"
             _this.amend = false
             _this.increased = true
+            for(let k in _this.ruleForm){
+                _this.ruleForm[k] = ""
+            }
         },
-        submitForm(formName) {
+        submitForm(formName){
             var _this = this
             _this.$refs[formName].validate((valid) => {
             if (valid) {
@@ -290,6 +295,11 @@ export default {
                             type: 'success',
                             message: '新增成功!'
                         });
+                        // if(_this.value==_this.ruleForm.classNum){
+                            
+                        // }else{
+                        //     console.log(789456)
+                        // }
                         _this.Refresh(_this.ruleForm.classNum);
                         _this.value = _this.ruleForm.classNum
                     }else if(res.data.code==0){
@@ -311,16 +321,19 @@ export default {
             }
             });
         },
-        resetForm(){
+        //取消
+        resetForm(formName,event){
             var _this = this
             _this.centerDialogVisible = false
-            for(let k in _this.ruleForm){
-                _this.ruleForm[k] = ""
-            }
+            _this.$refs[formName].resetFields();
         },
         //修改
         AlterPe(formName){
             var _this = this
+            var wenDatenun = new Date(_this.ruleForm.dater)
+            var Datenum = new Date()
+            var peryear = Datenum.getFullYear()
+            var befyear = wenDatenun.getFullYear()
             _this.$refs[formName].validate((valid)=>{
                 if(valid){
                     _this.$confirm('此操作将修改学生信息, 是否继续?', '提示', {
@@ -345,8 +358,33 @@ export default {
                                         type: 'success',
                                         message: '修改成功!'
                                     });
-                                    _this.Refresh(_this.Classval);
-                                    _this.value = _this.Classval
+                                    if(_this.value==_this.Classval){
+                                        var num = 0
+                                        var numthe = 0
+                                        var d = _this.ruleForm.dater
+                                        if(d.getMonth() + 1>9){
+                                            numthe = ""
+                                        }else{
+                                            numthe = 0
+                                        }
+                                        if(d.getDate()>9){
+                                            num = ""
+                                        }else{
+                                            num = 0
+                                        }
+                                        var datetime=d.getFullYear() + '-'+numthe+'' + (d.getMonth() + 1) + '-'+num+'' + d.getDate() + 'T0' + d.getHours() + ':0' + d.getMinutes() + ':0' + d.getSeconds();
+                                        _this.tableData[_this.Index].stuName = _this.ruleForm.name
+                                        _this.tableData[_this.Index].stuBirthDay = datetime
+                                        _this.tableData[_this.Index].stuClassId = _this.Classval
+                                        _this.tableData[_this.Index].stuMobile = _this.ruleForm.phone
+                                        _this.tableData[_this.Index].stuPassword = _this.ruleForm.passwo
+                                        _this.tableData[_this.Index].stuSex = _this.ruleForm.radio
+                                        _this.tableData[_this.Index].stuAge = Math.floor(peryear-befyear)
+                                    }else{
+                                        _this.tableData.splice(_this.Index,1)
+                                    }
+                                    // _this.Refresh(_this.Classval);
+                                    // _this.value = _this.Classval
                                 }else if(res.data.code==0){
                                     _this.$message({
                                         showClose: true,
@@ -379,9 +417,6 @@ export default {
             _this.axios.get('Student/GetClassStudent?classId='+val).then(function(res){
                     _this.tableData = res.data
             })
-        },
-        updatePe(){
-            console.log(123456)
         }
     },
     //创建后
@@ -399,8 +434,8 @@ export default {
         border: 1px solid #ccc;
         box-shadow: 0px 0px 10px 3px #ececec;
         border-radius: 5px;
-        /deep/ .el-dialog__headerbtn .el-dialog__close{
-            display: none;
+        /deep/ .el-dialog__wrapper{
+            padding-top:70px;
         }
         //搜索部分
         /deep/ .el-input__inner{
