@@ -175,7 +175,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 /* 加号图标 */
 .el-icon-circle-plus-outline{
   margin-right: 6px;
