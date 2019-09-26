@@ -94,6 +94,8 @@ export default {
                             message: '修改成功',
                             type: 'success'
                         });
+                        that.$router.push({path:'/login'})    //修改成功后跳到登录页面
+                        sessionStorage.removeItem("token")    //修改成功后清除会话存储的token（令牌）值
                     }else if(res.data.code=='-3'){
                         that.$message.error('旧密码错误！');
                     }else if(res.data.code=='-2'){
