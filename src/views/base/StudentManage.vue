@@ -380,7 +380,7 @@ export default {
                                         _this.tableData[_this.Index].stuPassword = _this.ruleForm.passwo
                                         _this.tableData[_this.Index].stuSex = _this.ruleForm.radio
                                         _this.tableData[_this.Index].stuAge = Math.floor(peryear-befyear)
-                                    }else{
+                                    }else{ 
                                         _this.tableData.splice(_this.Index,1)
                                     }
                                     // _this.Refresh(_this.Classval);
