@@ -40,7 +40,7 @@
         <el-table-column label="操作" width="145">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="scope.row.classStudents >0 ? true:false ">删除</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="scope.row.classStudents >0 ? true: false ">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -88,7 +88,7 @@
           class="demo-ruleForm"
         >
           <el-form-item label="班级名称" prop="name">
-            <el-input v-model="TwowayBinding.className"  :placeholder="Hold_className"></el-input>
+            <el-input v-model="TwowayBinding.className" value :placeholder="Hold_className"></el-input>
           </el-form-item>
 
           <el-form-item label="专业课程" prop="majorCouse">
@@ -128,7 +128,7 @@
 export default {
   data() {
     return {
-      // bool:[],  //删除按钮禁用
+      bool:[],  //删除按钮禁用
       tableData: [],//所有班级信息数据
       allCourse: [],//所有专业名字数据
       allTeacher: [],//所有老师名字数据
@@ -137,16 +137,18 @@ export default {
       Hold_className: [],//暂存班级名称数据
       Modalboxdisplay: false, //修改模态框隐藏
       centerDialogVisible: false, //新增模态框隐藏
+      //增加双向绑定
       ruleForm: {
         className: "",
         majorCouse: "",
         teacher: ""
       },
+      //修改双向绑定
       TwowayBinding: {
-        className: "",
-        majorCouse: "",
-        teacher: "",
-        classId: ""
+        className: "",//班级名字
+        majorCouse: "",//专业
+        teacher: "",//老师
+        classId: ""//班级id
       }
     };
   },
@@ -155,10 +157,10 @@ export default {
     handleEdit(index, row) {
       var _this = this;
       _this.Modalboxdisplay = true;
-      _this.TwowayBinding.classId = row.classId;
-      _this.Hold_userName = row.userName;
-      _this.Hold_courseName = row.courseName;
-      _this.Hold_className = row.className;
+      _this.TwowayBinding.classId = row.classId;//班级id
+      _this.Hold_userName = row.userName;//暂存老师名字
+      _this.Hold_courseName = row.courseName;//暂存专业名字
+      _this.Hold_className = row.className;//暂存班级名字
     },
     alterClass() {
       var _this = this;
@@ -243,7 +245,6 @@ export default {
     //删除
     handleDelete(index, row) {
       var _this = this;
-
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -294,8 +295,15 @@ export default {
             res.data[i].classCreateTime = new Date(
               res.data[i].classCreateTime
             ).toLocaleDateString();
+            if(res.data[i].classStudents>=1){
+                _this.bool.push(true)
+              }else{
+                _this.bool.push(false)
+              }
           }
           _this.tableData = res.data;
+           _this.tableData.push(_this.bool)
+          console.log(_this.tableData)
         })
         .catch(function(error) {
           console.log(error);
