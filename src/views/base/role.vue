@@ -178,11 +178,7 @@ export default {
 }
 </script>
 
-<<<<<<< HEAD
 <style lang="less" scoped>
-=======
-<style lang="scss" scoped>
->>>>>>> yinzhiliang
 /* 加号图标 */
 .el-icon-circle-plus-outline{
   margin-right: 6px;
