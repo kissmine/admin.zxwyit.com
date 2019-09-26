@@ -1,4 +1,4 @@
-import Vue from "vue";
+﻿import Vue from "vue";
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import App from "./App.vue";
@@ -9,7 +9,7 @@ import VueAxios from "vue-axios";
 
 
 Vue.config.productionTip = false;
-axios.defaults.baseURL = "http://192.168.1.188:12/api";
+axios.defaults.baseURL = "http://192.168.1.188:/api";
 Vue.use(VueAxios, axios);
 Vue.use(ElementUI);
 
